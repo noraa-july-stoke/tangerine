@@ -11,3 +11,7 @@ class Route:
         self.path = path
         self.methods = methods
         self.handler = handler
+
+    def match(self, path):
+        """Return True if the given path matches the route's path."""
+        return self.path == path

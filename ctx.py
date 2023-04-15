@@ -7,7 +7,7 @@
 from typing import Callable
 from socket import socket
 
-class Tctx:
+class Ctx:
     def __init__(self, request, response):
         self.request = request
         self.response = response
@@ -25,7 +25,6 @@ class Tctx:
 
     # def view(self, view_func):
     #     view_func(self)
-
 
     def __repr__(self):
         return f'<Tctx: {self.request} {self.response}>'
