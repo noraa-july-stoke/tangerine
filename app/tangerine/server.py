@@ -1,7 +1,8 @@
 import socket
-from request import Request
-from response import Response
-from ..routing import Router
+from app.tangerine.request import Request
+from app.tangerine.response import Response
+from app.routing.router import Router
+
 print(socket);
 
 class Tangerine:
