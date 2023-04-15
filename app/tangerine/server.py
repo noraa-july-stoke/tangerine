@@ -1,9 +1,10 @@
 import socket
-from http.request import Request
-from http.response import Response
-from routing.router import Router
+from request import Request
+from response import Response
+from ..routing import Router
+print(socket);
 
-class Server:
+class Tangerine:
     def __init__(self, host='localhost', port=8000):
         self.host = host
         self.port = port

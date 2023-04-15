@@ -1,11 +1,11 @@
-from .http.server import TangerineServer
-from .http.request import TangerineRequest
-from .http.response import TangerineResponse
-from .routing.router import TangerineRouter
+from .tangerine.server import Tangerine
+from .tangerine.request import Request
+from .tangerine.response import Response
+from .routing.router import Router
 
 __all__ = [
-    'TangerineServer',
-    'TangerineRequest',
-    'TangerineResponse',
-    'TangerineRouter',
+    'Tangerine',
+    'Request',
+    'Response',
+    'Router',
 ]
