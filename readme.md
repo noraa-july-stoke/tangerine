@@ -16,6 +16,39 @@ I am implementing a route creation syntax that I believe is a lot cleaner. It ut
 that get taken in and appended to the router, which can then be passed into the server. I think this could be easier for
 javascript developers coming into the python scene.
 
+i decided to use an optional lambda function that gets passed into the router
+i was thinking about maybe wrapping the lambdas in a named func under the hood for debugging purposes
+and then it would also open the door for allowing an mvc system so you could pick and choose your architecture pattern.
+if you pass a lambda in it gets wrapped with a name. if you pass a named function in it gets no wrapper.
+so you can do it like this to implement mvc:
+
+```python
+
+
+from tangerine import Tangerine, Router
+
+def hello_world(ctx):
+    ctx.send(200, "Hello, world!")
+
+tangerine = Tangerine()
+router = Router()
+router.get(Router('/', 'GET', hello_world))
+
+tangerine.use(router.routes())
+tangerine.start()
+
+# and using lambda
+
+from tangerine import Tangerine, Router
+tangerine = Tangerine()
+router = Router()
+
+router.get(Router('/', 'GET', lambda ctx: ctx.send(200, "Hello, world!")))
+
+tangerine.use(router.routes())
+tangerine.start()
+```
+
 Here is an example implementation of how in intend users be able to start the Tangerine server and begin creating routes. This
 example route sends an email with Tangerine framework:
 

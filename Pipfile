@@ -7,6 +7,7 @@ name = "pypi"
 werkzeug = "*"
 click = "*"
 pytest-trio = "*"
+web3 = "*"
 
 [dev-packages]
 
