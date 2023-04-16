@@ -12,11 +12,10 @@ more functionality. Current setup work is under branch architecture-setup.
 
 
 # Some initial basics...
-I am implementing a route creation syntax that I believe is a lot cleaner. It utilizes a lambda function and an endpoint
+I am implementing a route creation syntax that I believe is a lot cleaner. It utilizes an lambda function and an endpoint
 that get taken in and appended to the router, which can then be passed into the server. I think this could be easier for
 javascript developers coming into the python scene.
 
-i decided to use an optional lambda function that gets passed into the router
 i was thinking about maybe wrapping the lambdas in a named func under the hood for debugging purposes
 and then it would also open the door for allowing an mvc system so you could pick and choose your architecture pattern.
 if you pass a lambda in it gets wrapped with a name. if you pass a named function in it gets no wrapper.
@@ -47,6 +46,21 @@ router.get(Router('/', 'GET', lambda ctx: ctx.send(200, "Hello, world!")))
 
 tangerine.use(router.routes())
 tangerine.start()
+```
+
+
+```python
+# and then under the hood it goes through this class method if its a lambda
+import inspect
+# wrap func or not. i am debating whether this is worth it,
+# but i think it might offer some convenience.
+def wrap_lambda(func):
+    if inspect.isfunction(func) and func.__name__ == '<lambda>':
+        func_name = f'lambda_{id(func)}'
+        wrapped_func = lambda *args, **kwargs: func(*args, **kwargs)
+        wrapped_func.__name__ = func_name
+        return wrapped_func
+    return func
 ```
 
 Here is an example implementation of how in intend users be able to start the Tangerine server and begin creating routes. This
