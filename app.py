@@ -66,6 +66,5 @@ class Tangerine:
         finally:
             asyncio.run(self.__aexit__(None, None, None))
 
-
-app = Tangerine()
-app.start()
+# app = Tangerine()
+# app.start()

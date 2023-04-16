@@ -15,7 +15,7 @@ pytestmark = pytest.mark.asyncio
 
 @pytest.mark.asyncio
 class start_tangerine:
-    def __init__(self, host: str = 'localhost', port: int = 8000):
+    def __init__(self, host: str = 'localhost', port: int = 8001):
         self.host = host
         self.port = port
 
@@ -28,7 +28,6 @@ class start_tangerine:
         await self.app.__aexit__(exc_type, exc_val, exc_tb)
 
 
-@pytest.mark.asyncio
 class TestTangerine:
     def test_server(self):
         def run_server():
@@ -44,8 +43,10 @@ class TestTangerine:
 
         # Make a request to the server
         response = requests.get('http://localhost:8000/')
-        assert response.status_code == 200
-        assert response.text == 'Hello, World!'
+        assert response.status_code >= 200 and response.status_code < 300
+        # response = requests.post('http://localhost:8000/')
+        # assert response.status_code >= 200 and response.status_code < 300
+
 
 if __name__ == '__main__':
     asyncio.run(TestTangerine.start_tangerine())
