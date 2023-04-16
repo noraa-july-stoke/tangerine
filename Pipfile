@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 werkzeug = "*"
 click = "*"
+pytest-trio = "*"
 
 [dev-packages]
 

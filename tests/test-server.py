@@ -1,30 +1,51 @@
+# python -m pytest -v tests/test-server.py to run this test
 import asyncio
 import socket
+import requests
 from contextlib import asynccontextmanager
-
+import os
+import time
+import sys
+import pytest
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app import Tangerine
+import threading
+pytestmark = pytest.mark.asyncio
 
 
-@asynccontextmanager
-async def start_tangerine(host='localhost', port=8000):
-    async with Tangerine(host=host, port=port) as app:
-        server = asyncio.create_task(app.server.serve_forever())
-        try:
-            yield app
-        finally:
-            server.cancel()
+@pytest.mark.asyncio
+class start_tangerine:
+    def __init__(self, host: str = 'localhost', port: int = 8000):
+        self.host = host
+        self.port = port
+
+    async def __aenter__(self):
+        self.app = Tangerine(self.host, self.port)
+        await self.app.__aenter__()
+        return self.app
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.app.__aexit__(exc_type, exc_val, exc_tb)
 
 
-async def test_tangerine():
-    async with start_tangerine() as app:
-        reader, writer = await asyncio.open_connection(app.host, app.port)
-        writer.write(b'GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
-        response = (await reader.read(1024)).decode()
-        assert 'HTTP/1.1 200 OK' in response
-        assert 'Hello, World!' in response
-        writer.close()
-        await writer.wait_closed()
+@pytest.mark.asyncio
+class TestTangerine:
+    def test_server(self):
+        def run_server():
+            from app import Tangerine
+            app = Tangerine()
+            app.start()
 
+        server_thread = threading.Thread(target=run_server)
+        server_thread.start()
+
+        # Wait for the server to start up
+        time.sleep(1)
+
+        # Make a request to the server
+        response = requests.get('http://localhost:8000/')
+        assert response.status_code == 200
+        assert response.text == 'Hello, World!'
 
 if __name__ == '__main__':
-    asyncio.run(test_tangerine())
+    asyncio.run(TestTangerine.start_tangerine())
