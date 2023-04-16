@@ -50,5 +50,3 @@ if __name__ == '__main__':
 
 
 ```
-
-"readme documentation update <0001fab7>"

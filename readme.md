@@ -12,8 +12,8 @@ more functionality. Current setup work is under branch architecture-setup.
 
 # Some initial basics...
 I am implementing a route creation syntax that I believe is a lot cleaner. It utilizes a lambda function and an endpoint
-that get taken in and appended to the router, which can then be passed into the server.
-
+that get taken in and appended to the router, which can then be passed into the server. I think this could be easier for
+javascript developers coming into the python scene.
 
 Here is an example implementation of how in intend users be able to start the Tangerine server and begin creating routes. This
 example route sends an email with Tangerine framework:
@@ -49,15 +49,14 @@ router.post('/send-email', lambda ctx:
         server.sendmail(sender, recipient, message)
 
         # Set the response text if the email was sent successfully
-        ctx.res.status_code = 200
-        ctx.res.text = f'Email sent to {recipient}!'
+        ctx.body = f'Email sent to {recipient}!'
+        ctx.send(200)
     except:
         # Set the response text if the email failed to send
-        ctx.res.status_code = 500
-        ctx.res.text = 'Failed to send email'
+        body = 'Failed to send email'
+        ctx.send(200, body)
 
     # Send the response
-    ctx.send()
 )
 
 # Use the router with the Tangerine app
