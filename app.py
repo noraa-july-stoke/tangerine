@@ -1,14 +1,23 @@
 # TODO: add comments for all imports explaining what the module does
+# provides infrastructure for writing asynchronous code using coroutines
 import asyncio
+# provides access to low-level networking primitives
 import socket
+# provides access to high-level networking primitives
 import socketserver
+# provides logging facilities for use in library code
 import logging
+# provides access to type hints
 import typing as t
-import logging
+# provides access to the current interpreter stack frame
 import functools
+# provides access to inspecting live objects
 import inspect
+# provides json encoding and decoding
 import json
+# provides access to the operating system
 import os
+# provides a server for HTTP
 import http.server
 import sys
 import weakref
