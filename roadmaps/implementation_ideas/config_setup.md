@@ -4,7 +4,8 @@ from os import environ
 from tangerine import Tangerine, Keychain, Router, Ctx, TangerineError
 # keylimes is a keychain that holds your environment variables
 from key_limes import KeyLimes
-# buddhas hand is a database wrapper
+# buddhas hand is a database wrapper for ORM that draws on SQLAlchemy.
+# i am going to recommend mongoose or graphql
 from buddhas_hand import BuddhasHand
 # yuzu is an authentication wrapper that draws on AuthLib
 from yuzu import Yuzu
@@ -31,7 +32,7 @@ yuzu = Yuzu(
 
 # assigning tangerine.keychain to the keychain instance will allow you to use the
 # keychain and bypass the yuzu setup
-tangerine.keychain = keychain
+# tangerine.keychain = keychain
 
 # assigning tangerine.auth to the yuzu instance will allow you to use the yuzu auth
 # middlewares in your routes. yuzu will look through the keychain for the required keys

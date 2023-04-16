@@ -1,7 +1,7 @@
 #Buddha's Hand
 
 ## This is an idea sheet for how to implement buddhas hand from the user's perspective
-
+## Some parts of this document may not make full sense yet as I am working it out still
 
 ```python
 from os import environ
@@ -20,7 +20,7 @@ db = BuddhasHand(
 TORTOISE_ORM = {
     "connections": {
         "default": environ.get("DB_CONN_STRING"),
-        "secondary": environ.get("SECONDARY_CONN_STRING"),
+        "secondary": environ.get("SECONDARY_CONN_STRING"),s
     },
     "apps": {
         "models": {
