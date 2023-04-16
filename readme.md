@@ -63,7 +63,7 @@ def wrap_lambda(func):
     return func
 ```
 
-Here is an example implementation of how in intend users be able to start the Tangerine server and begin creating routes. This
+Here is an example implementation of how I intend users be able to start the Tangerine server and begin creating routes. This
 example route sends an email with Tangerine framework:
 
 ```python
