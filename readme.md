@@ -4,11 +4,11 @@
 I hate flask so I've decided to make a new python framework with better route creation syntax and
 am hoping to tackle some problems such as running database migrations in a better fashion (because
 ewwww migrations in python frameworks.... javascript frameworks currently handle this so much better).
-Looking into the "click" library to make a CLI tool for this.
 
 This is brand new, so still making skeletons/experimenting with the basic architecture and modules that I want to use.
 I am working out some kinks in the Tangerine class before I fixup Request, Response,and Ctx and then start to add in
-more functionality. Current setup work is under branch architecture-setup.
+more functionality. Current setup work is under branch architecture-setup. There are other repos associated with this:
+Bergamot, Buddha's Hand, and Key Limes. I am also working on a CLI tool for database migrations.
 
 
 # Some initial basics...
@@ -63,56 +63,40 @@ def wrap_lambda(func):
     return func
 ```
 
-Here is an example implementation of how I intend users be able to start the Tangerine server and begin creating routes. This
-example route sends an email with Tangerine framework:
 
 ```python
+# Here is an example implementation of how I intend users be able to start the Tangerine server and begin creating routes. This
+# example route sends an email with Tangerine framework:
+# I think this syntax is cleaner and easier to work with for developers coming in from javascript
 from tangerine import Tangerine, Router
-import smtplib
+from bergamot import Bergamot
 
 tangerine = Tangerine()
 router = Router()
 
+# in reality we'd want to pass in keychain or something to get the email and password
+bergamot = Bergamot('youremail@gmail.com', 'yourpassword')
 
-# I think this syntax is cleaner and easier to work with for developers coming in from javascript
 router.post('/send-email', lambda ctx:
-    # Try to send an email using the information from the request body
     try:
         message = ctx.req.form.get('message')
-        sender = 'youremail@gmail.com'
-        password = 'yourpassword'
         recipient = ctx.req.form.get('recipient')
 
-        smtp_server = 'smtp.gmail.com'
-        port = 587
+        result = bergamot.send_email(recipient, message)
 
-        server = smtplib.SMTP(smtp_server, port)
-        server.starttls()
-        server.login(sender, password)
-
-        subject = 'Hello from Tangerine!'
-        body = f'This message was sent from Tangerine: {message}'
-        message = f'Subject: {subject}\n\n{body}'
-
-        server.sendmail(sender, recipient, message)
-
-        # Set the response text if the email was sent successfully
-        ctx.body = f'Email sent to {recipient}!'
+        ctx.body = result
         ctx.send(200)
-    except:
-        # Set the response text if the email failed to send
-        body = 'Failed to send email'
-        ctx.send(200, body)
-
-    # Send the response
+    except ValueError as e:
+        ctx.body = str(e)
+        ctx.send(400)
 )
-
 # Use the router with the Tangerine app
 tangerine.use(router)
 
-# Start the Tangerine app
 if __name__ == '__main__':
     tangerine.start()
+
+
 ```
 
 
@@ -121,17 +105,21 @@ if __name__ == '__main__':
 
 
 
-# Buddha's hand implemetation ideas### Buddha's Hand class structural ideas
+# Buddha's hand implemetation ideas
 
 ```python
 import asyncio
 from typing import Dict, Union
+
+from strawberry.asgi import GraphQL
 from tortoise import Tortoise
 from aioredis import create_redis_pool
+
 
 class BuddhasHand:
     def __init__(self, db_configs: Dict[str, Dict[str, Union[str, int]]]):
         self.db_configs = db_configs
+        self.app = None
 
     async def setup(self):
         tasks = []
@@ -144,6 +132,8 @@ class BuddhasHand:
             else:
                 raise ValueError(f"Unsupported database type: {db_type}")
         await asyncio.gather(*tasks)
+        from .schema import schema
+        self.app = GraphQL(schema)
 
     async def connect_tortoise(self, db_name: str, db_config: Dict[str, Union[str, int]]):
         await Tortoise.init(
@@ -180,7 +170,6 @@ class BuddhasHand:
             await redis.wait_closed()
             delattr(self, f"{db_name}_redis")
 ```
-
 
 
 
@@ -248,6 +237,14 @@ tangerine.start()
 
 
 
+
+
+
+
+
+
+
+## this is just a scratch idea and probably wont be used.
 ```python
 from graphene import ObjectType, String, Int, Schema, List
 from buddhas_hand import BuddhasHand
@@ -265,6 +262,7 @@ class Post(ObjectType):
 
 class Query(ObjectType):
     post = Post(title=String())
+
 
     async def resolve_post(parent, info, title):
         post = await db.posts.find_one({"title": title})
