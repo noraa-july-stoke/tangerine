@@ -10,11 +10,12 @@ from tangerine import Route
 class Router:
     """The Router class handles HTTP requests and routes them to the appropriate view function."""
     def __init__(self):
-        self.routes = []
+        self.routes = {}
 
     def add_route(self, method, path, view_func):
         """Add a new route to the router."""
-        self.routes.append(Route(path, view_func, method))
+        self.routes[(method, path)] = view_func
+        print(self.routes, "===========READ/WRITE==========")
 
     def get(self, path, view_func):
         """Add a new GET route to the router."""
@@ -41,7 +42,4 @@ class Router:
 
     def get_route(self, method, path):
         """Get the view function for a given method and path."""
-        for route in self.routes:
-            if route.method == method and route.match(path):
-                return route.view_func
-        return None
+        return self.routes.get((method, path))

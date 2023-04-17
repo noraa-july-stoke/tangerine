@@ -2,11 +2,8 @@
 # ║   │ ┌┴┬┘
 # ╚═╝ ┴ ┴ └─
 # File: ctx.py
-# this context class will take in a request and response and will be passed to the view function
-# the response will start with a default of 404 not found and will be changed by the view function
-# the request will be passed to the view function and the self.request will be updated with
-# any necessary changes such as a change in auth status or a change in the path.
-
+# Description: This file contains the Ctx class which is used to store
+# the request, response, keychain objects, and some useful methods.
 from typing import Callable, TypeVar
 from socket import socket
 from request import Request
@@ -30,8 +27,10 @@ class Ctx:
         self.response = response
         return self.response
 
+    # !@#$ split this into two methods, one for successful methods, one for error methods
     def send(self: T, conn: socket) -> None:
-        self.response.send(conn)
+        conn.sendall(self.response.body.encode())
+
 
     def get_req_header(self: T, header: str) -> str:
         return self.request.headers.get(header)
