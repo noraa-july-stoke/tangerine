@@ -7,10 +7,10 @@
 ## Commit message keys:
 ```
 
-# anything provided after a <name> is optional but highly encouragedn for tracing.
+# anything provided after a <name> is optional but highly encouraged for tracing.
 
 # for updating any readmes or roadmaps
-📝 - <readme name>: <filepath>: <line number(s)>
+📖 - <readme name>: <filepath>: <line number(s)>
 
 # for new features
 🚀  - <new feature name>: <filepath>: <line number(s)>
@@ -26,6 +26,9 @@
 
 # branch initialization commit
 🌱 - <branch name>: <feature filepath>
+
+# standard merge message
+🔀 - <branch name>: <feature filepath>
 
 
 ```
