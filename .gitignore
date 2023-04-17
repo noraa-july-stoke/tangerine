@@ -1,1 +1,4 @@
 venv
+.venv
+random_debugs
+.env
