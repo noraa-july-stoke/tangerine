@@ -1,10 +1,11 @@
+```text
  ████████╗ █████╗ ███╗   ██╗ ██████╗ ███████╗██████╗ ██╗███╗   ██╗███████╗
  ╚══██╔══╝██╔══██╗████╗  ██║██╔════╝ ██╔════╝██╔══██╗██║████╗  ██║██╔════╝
     ██║   ███████║██╔██╗ ██║██║  ███╗█████╗  ██████╔╝██║██╔██╗ ██║█████╗
     ██║   ██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██╔══██╗██║██║╚██╗██║██╔══╝
     ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║  ██║██║██║ ╚████║███████╗
     ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚══════╝
-
+```
 Thanks for checking out Tangerine! This is a new python framework that I am working on. I hope
 it will be a lot more intuitive and easier to use than flask. I am currently working on the
 architecture and basic functionality. I am hoping to have a working full version of the framework
@@ -63,7 +64,6 @@ if you pass a lambda in it gets wrapped with a name. if you pass a named functio
 so you can do it like this to implement mvc:
 
 ```python
-# app.py
 # I think this syntax is cleaner and easier to work with for developers coming in from javascript
 from tangerine import Tangerine, Router
 
