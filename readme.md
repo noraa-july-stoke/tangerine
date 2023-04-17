@@ -32,14 +32,18 @@
 
 ```
 
-I hate flask so I've decided to make a new python framework with better route creation syntax and
+For now this is a pet project, but who knows? Maybe if I can get some help and get it to a
+point where it is actually usable, I will start to use it for my own projects. I am currently
+working on a new python framework that I hope will be a lot more intuitive and easier to use
+than flask. I am also working on a CLI tool for database migrations.
+I aim to make a new python framework with better route creation syntax thank flask and
 am hoping to tackle some problems such as running database migrations in a better fashion (because
 ewwww migrations in python frameworks.... javascript frameworks currently handle this so much better).
 
 This is brand new, so still making skeletons/experimenting with the basic architecture and modules that I want to use.
 I am working out some kinks in the Tangerine class before I fixup Request, Response,and Ctx and then start to add in
 more functionality. Current setup work is under branch architecture-setup. There are other repos associated with this:
-Bergamot, Buddha's Hand, and Key Limes. I am also working on a CLI tool for database migrations.
+Bergamot, Buddha's Hand, and Key Limes.
 
 
 # Some initial basics...
@@ -267,15 +271,8 @@ tangerine.start()
 ```
 
 
+## scratch idea for BuddhasHand.
 
-
-
-
-
-
-
-
-## this is just a scratch idea and probably wont be used.
 ```python
 from graphene import ObjectType, String, Int, Schema, List
 from buddhas_hand import BuddhasHand

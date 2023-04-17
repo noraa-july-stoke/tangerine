@@ -8,6 +8,7 @@ werkzeug = "*"
 click = "*"
 pytest-trio = "*"
 web3 = "*"
+requests = "*"
 
 [dev-packages]
 

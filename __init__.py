@@ -1,2 +1,4 @@
-from app import Tangerine
-from ctx import Ctx
+from tangerine import Tangerine
+
+app = Tangerine()
+app.start()

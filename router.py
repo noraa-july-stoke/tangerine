@@ -1,53 +1,40 @@
-# router.py
-from route import Route
+from tangerine import Route
 
 class Router:
     """The Router class handles HTTP requests and routes them to the appropriate view function."""
     def __init__(self):
         self.routes = []
 
-    def add_route(self, path, view_func):
+    def add_route(self, method, path, view_func):
         """Add a new route to the router."""
-        self.routes.append(Route(path, view_func))
+        self.routes.append(Route(path, view_func, method))
 
-    def get_route(self, path):
-        """Get the view function for a given path."""
+    def get(self, path, view_func):
+        """Add a new GET route to the router."""
+        self.add_route('GET', path, view_func)
+
+    def post(self, path, view_func):
+        """Add a new POST route to the router."""
+        self.add_route('POST', path, view_func)
+
+    def put(self, path, view_func):
+        """Add a new PUT route to the router."""
+        self.add_route('PUT', path, view_func)
+
+    def delete(self, path, view_func):
+        """Add a new DELETE route to the router."""
+        self.add_route('DELETE', path, view_func)
+
+    def route(self, path, view_func):
+        """Add a new route for all methods to the router."""
+        self.add_route('GET', path, view_func)
+        self.add_route('POST', path, view_func)
+        self.add_route('PUT', path, view_func)
+        self.add_route('DELETE', path, view_func)
+
+    def get_route(self, method, path):
+        """Get the view function for a given method and path."""
         for route in self.routes:
-            if route.match(path):
+            if route.method == method and route.match(path):
                 return route.view_func
         return None
-
-    def get(self, path):
-        """Decorator for adding a GET route."""
-        def decorator(view_func):
-            self.add_route(path, view_func)
-            return view_func
-        return decorator
-
-    def post(self, path):
-        """Decorator for adding a POST route."""
-        def decorator(view_func):
-            self.add_route(path, view_func)
-            return view_func
-        return decorator
-
-    def put(self, path):
-        """Decorator for adding a PUT route."""
-        def decorator(view_func):
-            self.add_route(path, view_func)
-            return view_func
-        return decorator
-
-    def delete(self, path):
-        """Decorator for adding a DELETE route."""
-        def decorator(view_func):
-            self.add_route(path, view_func)
-            return view_func
-        return decorator
-
-    def route(self, path):
-        """Decorator for adding a route for all methods."""
-        def decorator(view_func):
-            self.add_route(path, view_func)
-            return view_func
-        return decorator

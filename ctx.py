@@ -6,7 +6,10 @@
 
 from typing import Callable
 from socket import socket
-from app import Request, Response, Keychain, Auth
+from request import Request
+from response import Response
+from keychain import Keychain
+from auth import Auth
 
 class Ctx:
     def __init__(self, request: Request, response: Response, keychain: Keychain, auth: bool = False):
