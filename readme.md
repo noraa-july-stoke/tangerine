@@ -7,25 +7,25 @@
 ## Commit message keys:
 ```
 
-# anything provided after a <name> is optional but highly encouraged for tracing.
+# anything provided after <relevant comment>: is optional but highly encouraged for tracing.
 
 # for updating any readmes or roadmaps
-📖 - <readme name>: <filepath>: <line number(s)>
+📖 - <readme name>: <relevant comment>: <filepath>: <line number(s)>
 
 # for new features
-🚀  - <new feature name>: <filepath>: <line number(s)>
+🚀  - <new feature name>: <relevant comment>: <filepath>: <line number(s)>
 
 # for debug commits.
-🪳👟 - <bug name>: <filepath>: <line number(s)>
+🪳👟 - <bug name>: <relevant comment>: <filepath>: <line number(s)>
 
 # for refactoring
-🧠 - <refactor name>: <filepath>: <line number(s)>
+🧠 - <refactor name>: <relevant comment>: <filepath>: <line number(s)>
 
 # for documentation
-🪷 - <documentation name>: <filepath(s)>: <line number(s)>>
+🪷 - <documentation name>: <relevant comment>: <filepath(s)>: <line number(s)>>
 
 # branch initialization commit
-🌱 - <branch name>: <feature filepath>
+🌱 - <branch name>: <relevant comment>: <feature filepath>
 
 # standard merge message
 🔀 - <branch name>: <feature filepath>
