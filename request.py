@@ -1,5 +1,11 @@
-# request.py
-#import necessary modules for from_bytes method
+#  ╦═╗┌─┐┌─┐ ┬ ┬┌─┐┌─┐┌┬┐
+#  ╠╦╝├┤ │─┼┐│ │├┤ └─┐ │
+#  ╩╚═└─┘└─┘└└─┘└─┘└─┘ ┴
+# File: request.py
+# Description: This file contains the Request class which is used to store
+# the request data. This is used to determine the request method, path,
+# headers, and body.
+
 from typing import Dict
 from response import Response
 import socket

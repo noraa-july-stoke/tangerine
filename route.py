@@ -1,3 +1,9 @@
+#  ╦═╗┌─┐┬ ┬┌┬┐┌─┐
+#  ╠╦╝│ ││ │ │ ├┤
+#  ╩╚═└─┘└─┘ ┴ └─┘
+# File: route.py
+# Description: This file contains the Route class which is used to store
+# the routes and route the requests to the appropriate view function.
 class Route:
     """Represents a single route in the application.
 

@@ -1,4 +1,11 @@
-# response.py
+#  ╦═╗┌─┐┌─┐┌─┐┌─┐┌┐┌┌─┐┌─┐
+#  ╠╦╝├┤ └─┐├─┘│ ││││└─┐├┤
+#  ╩╚═└─┘└─┘┴  └─┘┘└┘└─┘└─┘
+# File: response.py
+# Description: This file contains the Response class which is used to store
+# the response data. This is used to determine the response status code,
+# headers, and body.
+
 class Response:
     """
         The Response class is the class that is returned from the view function.
