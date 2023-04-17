@@ -10,26 +10,25 @@
 # anything provided after <relevant comment>: is optional but highly encouraged for tracing.
 
 # for updating any readmes or roadmaps
-📖 - <readme name>: <relevant comment>: <filepath>: <line number(s)>
+📖 - <filepath/filename>: <relevant comment>:
 
 # for new features
-🚀  - <new feature name>: <relevant comment>: <filepath>: <line number(s)>
+🚀  - <filepath/filename>: <relevant comment>:
 
 # for debug commits.
-🪳👟 - <bug name>: <relevant comment>: <filepath>: <line number(s)>
+🪳👟 - <filepath/filename>: <relevant comment>:
 
 # for refactoring
-🧠 - <refactor name>: <relevant comment>: <filepath>: <line number(s)>
+🧠 - <filepath/filename>: <relevant comment>:
 
 # for documentation
-🪷 - <documentation name>: <relevant comment>: <filepath(s)>: <line number(s)>>
+🪷 - <filepath/filename>: <relevant comment>:
 
 # branch initialization commit
-🌱 - <branch name>: <relevant comment>: <feature filepath>
+🌱 - <filepath/filename>: <relevant comment>
 
 # standard merge message
-🔀 - <branch name>: <feature filepath>
-
+🔀 - <branch name>: <feature filepath>: <relevant comment>
 
 ```
 
