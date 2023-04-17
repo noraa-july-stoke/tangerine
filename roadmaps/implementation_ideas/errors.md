@@ -21,8 +21,6 @@ class TangerineError(Exception):
 def error(ctx, message, status_code):
     raise TangerineError(message, status_code)
 
-
-
 possible implementation
 
 ```

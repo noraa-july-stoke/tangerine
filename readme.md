@@ -1,10 +1,27 @@
-# Tangerine
+ ████████╗ █████╗ ███╗   ██╗ ██████╗ ███████╗██████╗ ██╗███╗   ██╗███████╗
+ ╚══██╔══╝██╔══██╗████╗  ██║██╔════╝ ██╔════╝██╔══██╗██║████╗  ██║██╔════╝
+    ██║   ███████║██╔██╗ ██║██║  ███╗█████╗  ██████╔╝██║██╔██╗ ██║█████╗
+    ██║   ██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██╔══██╗██║██║╚██╗██║██╔══╝
+    ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║  ██║██║██║ ╚████║███████╗
+    ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚══════╝
+
+Thanks for checking out Tangerine! This is a new python framework that I am working on. I hope
+it will be a lot more intuitive and easier to use than flask. I am currently working on the
+architecture and basic functionality. I am hoping to have a working full version of the framework
+up and running some time soon.
 
 
+I am also working on a CLI tool for database migrations.
+I aim to make the newframework with better route creation syntax thank flask and
+am hoping to tackle some problems such as running database migrations in a better fashion (because
+ewwww migrations in python frameworks.... javascript frameworks currently handle this so much better).
 
+This is brand new, so still making skeletons/experimenting with the basic architecture and modules that I want to use.
+I am working out some kinks in the Tangerine class before I fixup Request, Response,and Ctx and then start to add in
+more functionality. Current setup work is under branch architecture-setup. There are other repos associated with this:
+Bergamot, Buddha's Hand, and Key Limes.
 
-
-## Commit message keys:
+# Commit message keys:
 ```
 
 # anything provided after <relevant comment>: is optional but highly encouraged for tracing.
@@ -32,18 +49,7 @@
 
 ```
 
-For now this is a pet project, but who knows? Maybe if I can get some help and get it to a
-point where it is actually usable, I will start to use it for my own projects. I am currently
-working on a new python framework that I hope will be a lot more intuitive and easier to use
-than flask. I am also working on a CLI tool for database migrations.
-I aim to make a new python framework with better route creation syntax thank flask and
-am hoping to tackle some problems such as running database migrations in a better fashion (because
-ewwww migrations in python frameworks.... javascript frameworks currently handle this so much better).
 
-This is brand new, so still making skeletons/experimenting with the basic architecture and modules that I want to use.
-I am working out some kinks in the Tangerine class before I fixup Request, Response,and Ctx and then start to add in
-more functionality. Current setup work is under branch architecture-setup. There are other repos associated with this:
-Bergamot, Buddha's Hand, and Key Limes.
 
 
 # Some initial basics...
@@ -57,9 +63,11 @@ if you pass a lambda in it gets wrapped with a name. if you pass a named functio
 so you can do it like this to implement mvc:
 
 ```python
-
-
+# app.py
+# I think this syntax is cleaner and easier to work with for developers coming in from javascript
 from tangerine import Tangerine, Router
+
+# you can name you controller functions elsewhere in your codebase like this
 
 def hello_world(ctx):
     ctx.send(200, "Hello, world!")
@@ -71,7 +79,7 @@ router.get(Router('/', 'GET', hello_world))
 tangerine.use(router.routes())
 tangerine.start()
 
-# and using lambda
+# but you can also just pass in a lambda like so...
 
 from tangerine import Tangerine, Router
 tangerine = Tangerine()
@@ -85,10 +93,8 @@ tangerine.start()
 
 
 ```python
-# and then under the hood it goes through this class method if its a lambda
-import inspect
-# wrap func or not. i am debating whether this is worth it,
-# but i think it might offer some convenience.
+# And then maybe under the hood, the router would wrap the lambda in a named function like so:
+# this might be useful for debugging purposes and also for allowing mvc architecture
 def wrap_lambda(func):
     if inspect.isfunction(func) and func.__name__ == '<lambda>':
         func_name = f'lambda_{id(func)}'
@@ -100,9 +106,8 @@ def wrap_lambda(func):
 
 
 ```python
-# Here is an example implementation of how I intend users be able to start the Tangerine server and begin creating routes. This
-# example route sends an email with Tangerine framework:
-# I think this syntax is cleaner and easier to work with for developers coming in from javascript
+# Here is an example of how I am thinking about implementing the route creation syntax.
+# This example route sends an email with Tangerine framework:
 from tangerine import Tangerine, Router
 from bergamot import Bergamot
 

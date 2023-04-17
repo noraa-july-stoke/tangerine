@@ -1,3 +1,7 @@
+# Server errors of all kinds are the bane of my existence
+# So I want to figure out something cool to do with this class.
+# open to ideas
+# path: errors.py
 class TangerineError(Exception):
     def __init__(self, message, status_code):
         super().__init__(message)
