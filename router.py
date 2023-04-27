@@ -6,16 +6,20 @@
 # the routes and route the requests to the appropriate view function.
 
 from tangerine import Route
+from typing import List, Tuple
 
 class Router:
     """The Router class handles HTTP requests and routes them to the appropriate view function."""
     def __init__(self):
-        self.routes = {}
+        self.routes_dict = {}
 
     def add_route(self, method, path, view_func):
         """Add a new route to the router."""
-        self.routes[(method, path)] = view_func
-        print(self.routes, "===========READ/WRITE==========")
+        self.routes_dict[(method, path)] = view_func
+        # for route, view_func in self.routes_dict.items():
+            # print(route, "===========ROUTE==========")
+            # print(view_func, "===========VIEW_FUNC==========")
+        # print(self.routes_dict, "===========SELF_ROUTES==========")
 
     def get(self, path, view_func):
         """Add a new GET route to the router."""
@@ -42,4 +46,12 @@ class Router:
 
     def get_route(self, method, path):
         """Get the view function for a given method and path."""
-        return self.routes.get((method, path))
+        return self.routes_dict.get((method, path))
+
+    def routes (self):
+        """Get all the routes in the router and collect them into a list and then return it."""
+        routes: List[Tuple[str, str]] = []
+        for route, view_func in self.routes_dict.items():
+            # append a tuple of the route and the view_func to the routes list
+            routes.append((route, view_func))
+        return routes

@@ -54,15 +54,28 @@ class Tangerine:
         self.host: str = host
         self.port: int = port
         self.ctx: Ctx = Ctx
-        self.middleware: List[Callable[[Request, Response], None]] = []
+        self.middleware: List[Tuple[Tuple, Callable[[Request, Response], None]]] = []
 
-    def use(self: T, middleware_func: Callable[[Request, Response], None]):
-        print(middleware_func, "============MIDDLEWARE FUNC=========")
-        self.middleware.append(middleware_func)
+    def use_router(self: T, middleware_funcs: List[Callable[[Request, Response], None]]) -> None:
+        """ Takes in a middleware list and appends it to self.middleware """
+        for method_route, view_func in middleware_funcs:
+            # print(method_route, view_func,  "======METHOD_ROUTE, VIEW FUNC=====")
+            if inspect.isfunction(view_func) and view_func.__name__ == '<lambda>':
+                l_func = self.wrap_lambda(view_func)
+                # print(l_func,  "======L_FUNC=====")
+                self.middleware.append((method_route, self.wrap_lambda(view_func)))
+            else:
+                self.middleware.append((method_route, view_func))
+
+    def wrap_lambda(self: T, func: Callable) -> Callable:
+        func_name = f'lambda_{id(func)}'
+        wrapped_func = lambda *args, **kwargs: func(*args, **kwargs)
+        wrapped_func.__name__ = func_name
+        return wrapped_func
 
     def static(self: T, dir_path: str):
         def static_handler(ctx: Ctx):
-            print(dir_path, "============STATIC=========")
+            # print(dir_path, "============STATIC=========")
 
             file_path: str = os.path.join(dir_path, ctx.req.path.lstrip('/'))
 
@@ -79,7 +92,6 @@ class Tangerine:
 
     async def handle_client(self: T, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
         print(reader, writer, "===========READ/WRITE==========")
-
         while not reader.at_eof():
             data = await reader.read(1024)
             if data.startswith(b'GET / HTTP/1.1\r\n'):
@@ -96,11 +108,14 @@ class Tangerine:
                     await writer.drain()
         writer.close()
 
+
     async def run_server(self: T) -> None:
         self.router = Router()
         Handler = http.server.SimpleHTTPRequestHandler
+
         httpd = socketserver.TCPServer((self.host, self.port), Handler)
-        logging.info(f' 🍊 Server sprouted @ {self.host}:{self.port}.. 🌱🌱🌱')
+
+        logging.info(f' 🍊 Server sprouted @ {self.host}:{self.port}... 🌱🌱🌱')
         logging.info(' Press Ctrl+C to stop the server')
         httpd.serve_forever()
 

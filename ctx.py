@@ -29,8 +29,8 @@ class Ctx:
 
     # !@#$ split this into two methods, one for successful methods, one for error methods
     def send(self: T, conn: socket) -> None:
+        print(self.response.body, "===========RESPONSE BODY FROM CONTEXT==========")
         conn.sendall(self.response.body.encode())
-
 
     def get_req_header(self: T, header: str) -> str:
         return self.request.headers.get(header)

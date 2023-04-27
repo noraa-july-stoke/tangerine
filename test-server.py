@@ -1,34 +1,16 @@
 import json
 from tangerine import Tangerine, Router
+
 app = Tangerine('localhost', 8081)
-# print(app, "===========APP==========")
-router = Router()
-# print(router, "===========ROUTER==========")
+api_router = Router()
 
-# app.use(app.static('frontend/'))
+# api_router.post('/send-email', lambda ctx:
+#     def hello_world():
+#         print("hello world")
+# )
 
-router.get('/', lambda ctx: (
-    ctx.send('Hello World!'),
-    print("route hit")
-))
 
-router.get('/hello_world', lambda ctx: (
-    ctx.send('Hello World!'),
-    print("route hit")
-))
-
-# router.post('/', lambda ctx: ctx.send('Hello World!'))
-# router.put('/', lambda ctx: ctx.send('Hello World!'))
-# router.delete('/', lambda ctx: ctx.send('Hello World!'))
-
-async def get_users(ctx):
-    users = [
-        {"id": 1, "name": "John Doe"},
-        {"id": 2, "name": "Jane Doe"}
-    ]
-    ctx.send(json.dumps(users), content_type="application/json")
-
-router.get("/users", get_users)
-
-app.use(router)
+# calling app.use_router() with a router will append all of the middleware
+# contained in that router in order of the routes definition
+app.use(api_router)
 app.start()
