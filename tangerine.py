@@ -248,14 +248,9 @@ class Tangerine:
                         ctx = Ctx(req, res)
                         ctx.set_socket(sock)  # Set the socket for the context
 
-                        # Check if the requested path matches the static route pattern
-                        match = self.static_route_pattern_re.match(path)
-                        if match:
-                            # Get the filename from the matched path
-                            filename = match.group(1)
-
-                            # Construct the file path by joining the static directory path and filename
-                            file_path = os.path.join(self.static_dir_path, filename.lstrip('/'))
+                        # Check if the requested path matches any of the static routes
+                        if self.static_route_pattern_re and self.static_route_pattern_re.match(path):
+                            file_path: str = os.path.join(self.static_dir_path, path[7:])
 
                             if not os.path.exists(file_path) or not os.path.isfile(file_path):
                                 ctx.send(404, 'File not found')
@@ -276,7 +271,13 @@ class Tangerine:
                                 res.body = b'404 Not Found'
 
                         # Send the HTTP response back to the client
-                        ctx.send_to_client()  # Send the response using the
+                        ctx.send_to_client()  # Send the response using the context
+                        sock.close()
+                        inputs.remove(sock)
+                    else:
+                        # Empty data from existing client connection, remove from inputs
+                        sock.close()
+                        inputs.remove(sock)
 
     def start(self: T) -> None:
         try:
