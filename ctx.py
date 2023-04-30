@@ -30,7 +30,7 @@ class Ctx:
         return self.response
 
     # !@#$ split this into two methods, one for successful methods, one for error methods
-    def send(self: T, status: Optional[int] = None, body: Optional[Union[str, bytes]] = None, headers: Optional[Dict[str, str]] = None) -> None:
+    def send(self: T, status: Optional[int] = None, body: Optional[Union[str, bytes]] = None, headers: Optional[Dict[str, str]] = None, content_type: Optional[str] = None) -> None:
         if status:
             self.response.status_code = status
         if body:
@@ -40,10 +40,10 @@ class Ctx:
                 self.response.body = body
         if headers:
             self.response.headers.update(headers)
-        if 'Content-Type' not in self.response.headers:
+        if content_type:
+            self.response.headers['Content-Type'] = content_type
+        elif 'Content-Type' not in self.response.headers:
             self.response.headers['Content-Type'] = 'application/json'  # Set default Content-Type
-
-
 
     def send_to_client(self: T) -> None:
         if self.sock:

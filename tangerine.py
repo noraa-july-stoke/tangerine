@@ -136,7 +136,6 @@
 #         finally:
 #             asyncio.run(self.__aexit__(None, None, None))
 
-
 import socket
 import select
 import json
@@ -145,6 +144,7 @@ import os
 import mimetypes
 import re
 import logging
+from colorama import init, Fore, Back, Style, Cursor
 
 from errors import TangerineError
 from request import Request
@@ -159,7 +159,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 class Tangerine:
-    def __init__(self: T, host: str = 'localhost', port: int = 8000) -> None:
+    def __init__(self: T, host: str = 'localhost', port: int = 8000, debug: bool = False) -> None:
         self.host: str = host
         self.port: int = port
         self.routes: Dict[str,
@@ -169,7 +169,11 @@ class Tangerine:
         self.static_route_pattern = None
         # Add this line to define the regex instance variable
         self.static_route_pattern_re = None
+        self.debug: bool = debug
+        # self.config: Dict = None
         # self.ctx = Ctx(self)
+
+    # def
 
     def _create_socket(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -193,7 +197,7 @@ class Tangerine:
             # Use regular expressions to match the requested path against the static route pattern
             pattern = '^{}(/.*)?$'.format(self.static_route_pattern.rstrip('/'))
             self.static_route_pattern_re = re.compile(pattern)
-            print("STATIC ROUTE PATTERN", self.static_route_pattern, self.static_route_pattern_re, self.static_dir_path)
+            # print("STATIC ROUTE PATTERN", self.static_route_pattern, self.static_route_pattern_re, self.static_dir_path)
 
     def parse_request(self, request: bytes) -> Tuple[str, str, Dict[str, str], Union[str, bytes]]:
         # Split the request into its individual lines
@@ -250,7 +254,8 @@ class Tangerine:
 
                         # Check if the requested path matches any of the static routes
                         if self.static_route_pattern_re and self.static_route_pattern_re.match(path):
-                            file_path: str = os.path.join(self.static_dir_path, path[7:])
+                            file_path: str = os.path.join(self.static_dir_path, path[len(self.static_route_pattern):].lstrip('/'))
+
 
                             if not os.path.exists(file_path) or not os.path.isfile(file_path):
                                 ctx.send(404, 'File not found')

@@ -1,0 +1,81 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    padding: 1em;
+}
+
+h1 {
+    margin: 0;
+}
+
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1em;
+}
+
+.hero {
+    background-image: url('https://img.freepik.com/premium-vector/hand-drawn-watercolor-tangerine-orange-clipart_514409-1423.jpg?w=2000');
+    background-size: cover;
+    background-position: center;
+    color: rgba(0,0,0,1);
+    padding: 3em;
+    text-align: center;
+}
+
+.features {
+    background-color: #fff;
+    padding: 2em;
+    margin: 2em 0;
+    text-align: center;
+}
+
+.features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.features li {
+    display: inline-block;
+    margin-right: 2em;
+}
+
+.testimonials {
+    background-color: #f7f7f7;
+    padding: 2em;
+    text-align: center;
+}
+
+blockquote {
+    font-style: italic;
+}
+
+cite {
+    font-weight: bold;
+    margin-top: 1em;
+    display: block;
+}
+
+button {
+    background-color: #333;
+    color: #fff;
+    padding: 1em;
+    border: none;
+    border-radius: 5px;
+    margin-top: 2em;
+    font-size: 1.2em;
+}
+
+button:hover {
+    background-color: #555;
+    cursor: pointer;
+}
