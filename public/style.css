@@ -10,6 +10,7 @@ header {
     background-color: #fff;
     border-bottom: 1px solid #ccc;
     padding: 1em;
+    text-align: center;
 }
 
 h1 {
@@ -20,16 +21,25 @@ main {
     max-width: 800px;
     margin: 0 auto;
     padding: 1em;
+
 }
+/* https://img.freepik.com/premium-photo/tangerine-clipart-isolated-white_98599-90.jpg */
+/* https://img.freepik.com/premium-vector/hand-drawn-watercolor-tangerine-orange-clipart_514409-1423.jpg?w=2000 */
 
 .hero {
-    background-image: url('https://img.freepik.com/premium-vector/hand-drawn-watercolor-tangerine-orange-clipart_514409-1423.jpg?w=2000');
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-image: url('https://img.freepik.com/premium-photo/tangerine-clipart-isolated-white_98599-90.jpg');
     background-size: cover;
     background-position: center;
     color: rgba(0,0,0,1);
     padding: 3em;
     text-align: center;
+    height: 500px; /* set the height to the desired value */
 }
+
 
 .features {
     background-color: #fff;

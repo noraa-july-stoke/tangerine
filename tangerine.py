@@ -152,6 +152,7 @@ from response import Response
 from ctx import Ctx
 from route import Route
 from router import Router
+from print_messages import PrintMessage
 
 T = TypeVar("T")
 logging.basicConfig(level=logging.DEBUG)
@@ -220,69 +221,83 @@ class Tangerine:
 
         return method, path, headers, body
 
-    def run(self):
+    def handle_new_client(self, client_socket: socket.socket, inputs: List[socket.socket]) -> None:
+        inputs.append(client_socket)
+
+    def handle_existing_client(self, sock: socket.socket, inputs: List[socket.socket], outputs: List[socket.socket]) -> None:
+        request = sock.recv(4096)
+        if request:
+            # Parse the HTTP request and extract the method, path, and headers
+            method, path, headers, body = self.parse_request(request)
+
+            # Create a Request object to encapsulate the request data
+            req = Request(method, path, headers, body)
+
+            # Create a Response object with default status code and headers
+            res = Response()
+
+            # Apply the middleware to the Request and Response objects
+            for middleware in self.middlewares:
+                middleware(req, res)
+
+            ctx = Ctx(req, res)
+            ctx.set_socket(sock)  # Set the socket for the context
+
+            # Check if the requested path matches any of the static routes
+            if self.static_route_pattern_re and self.static_route_pattern_re.match(path):
+                self.handle_static_route(ctx, path)
+
+            else:
+                handler = self.router.get_route(method, path)
+                if handler:
+                    self.router.handle_route(method, path, ctx)
+                else:
+                    # No handler found for the requested route, return 404 Not Found
+                    self.handle_not_found(ctx)
+
+            # Send the HTTP response back to the client
+            ctx.send_to_client()  # Send the response using the context
+            sock.close()
+            inputs.remove(sock)
+
+        else:
+            # Empty data from existing client connection, remove from inputs
+            sock.close()
+            inputs.remove(sock)
+
+    def handle_static_route(self, ctx: Ctx, path: str) -> None:
+        file_path: str = os.path.join(self.static_dir_path, path[len(self.static_route_pattern):].lstrip('/'))
+
+        if not os.path.exists(file_path) or not os.path.isfile(file_path):
+            ctx.send(404, 'File not found')
+        else:
+            with open(file_path, 'rb') as f:
+                data = f.read()
+
+            content_type, _ = mimetypes.guess_type(file_path)
+            ctx.send(200, data, content_type=content_type)
+
+    def handle_not_found(self, ctx: Ctx) -> None:
+        ctx.send(404, b'404 Not Found')
+        ctx.set_res_header('Content-Type', 'text/plain')
+
+    def run(self) -> None:
         inputs = [self.server_socket]
         outputs = []
-        logging.info(f' 🍊 Server sprouted @ {self.host}:{self.port}... 🌱🌱🌱')
-        logging.info(' Press Ctrl+C to stop the server')
+        PrintMessage(self.port, self.host, self.debug)
+
         while inputs:
             readable, writable, exceptional = select.select(inputs, outputs, inputs)
+
             for sock in readable:
                 if sock is self.server_socket:
                     # New client connection
                     client_socket, address = self.server_socket.accept()
-                    inputs.append(client_socket)
+                    self.handle_new_client(client_socket, inputs)
+
                 else:
                     # Existing client connection with new data
-                    request = sock.recv(4096)
-                    if request:
-                        # Parse the HTTP request and extract the method, path, and headers
-                        method, path, headers, body = self.parse_request(request)
-
-                        # Create a Request object to encapsulate the request data
-                        req = Request(method, path, headers, body)
-
-                        # Create a Response object with default status code and headers
-                        res = Response()
-
-                        # Apply the middleware to the Request and Response objects
-                        for middleware in self.middlewares:
-                            middleware(req, res)
-
-                        ctx = Ctx(req, res)
-                        ctx.set_socket(sock)  # Set the socket for the context
-
-                        # Check if the requested path matches any of the static routes
-                        if self.static_route_pattern_re and self.static_route_pattern_re.match(path):
-                            file_path: str = os.path.join(self.static_dir_path, path[len(self.static_route_pattern):].lstrip('/'))
-
-
-                            if not os.path.exists(file_path) or not os.path.isfile(file_path):
-                                ctx.send(404, 'File not found')
-                            else:
-                                with open(file_path, 'rb') as f:
-                                    data = f.read()
-
-                                content_type, _ = mimetypes.guess_type(file_path)
-                                ctx.send(200, data, content_type=content_type)
-                        else:
-                            handler = self.router.get_route(method, path)
-                            if handler:
-                                self.router.handle_route(method, path, ctx)
-                            else:
-                                # No handler found for the requested route, return 404 Not Found
-                                res.status_code = 404
-                                res.headers['Content-Type'] = 'text/plain'
-                                res.body = b'404 Not Found'
-
-                        # Send the HTTP response back to the client
-                        ctx.send_to_client()  # Send the response using the context
-                        sock.close()
-                        inputs.remove(sock)
-                    else:
-                        # Empty data from existing client connection, remove from inputs
-                        sock.close()
-                        inputs.remove(sock)
+                    self.handle_existing_client(sock, inputs, outputs)
 
     def start(self: T) -> None:
         try:
