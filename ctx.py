@@ -212,7 +212,7 @@ class Ctx:
         return {
             'request': self.request.to_dict(),
             'response': self.response.to_dict(),
-            # 'keychain': self.keychain.to_dict() if self.keychain else None,
+            'socket': f"<socket fd={self.sock.fileno()}>" if self.sock else None,
             'auth': self.auth,
         }
 

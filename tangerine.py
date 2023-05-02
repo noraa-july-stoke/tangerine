@@ -23,7 +23,7 @@ from ctx import Ctx
 from route import Route
 from router import Router
 from print_messages import print_success
-from debug_helpers import generate_diff, copy_context_without_socket
+from debug_helpers import generate_diff
 # from tangerine import Request, Response, Ctx, PrintMessage, Route, Router, TangerineError
 
 T = TypeVar("T")
@@ -52,7 +52,7 @@ class Tangerine:
     def debugger(self, middleware: Callable[[Ctx], None]) -> Callable[[Ctx], None]:
         def wrapper(ctx: Ctx) -> None:
             if self.debug_level > 0:
-                old_state = copy_context_without_socket(ctx)
+                old_state = ctx.to_dict()
 
                 print(Fore.CYAN + f">>> Debug: Before middleware {middleware.__name__}" + Style.RESET_ALL)
                 print("Current context state:")
@@ -64,7 +64,7 @@ class Tangerine:
             middleware(ctx)
 
             if self.debug_level > 0:
-                new_state = copy_context_without_socket(ctx)
+                new_state = ctx.to_dict()
 
                 print(Fore.CYAN + f"<<< Debug: After middleware {middleware.__name__}" + Style.RESET_ALL)
                 print("New context state:")
