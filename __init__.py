@@ -1,4 +1,4 @@
-# from tangerine import Tangerine
+# import tangerine
 # from yuzu import Yuzu
 
 # app = Tangerine()

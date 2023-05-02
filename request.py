@@ -11,6 +11,11 @@ from response import Response
 import socket
 import json
 
+from typing import Dict
+from response import Response
+import socket
+import json
+
 class Request:
     """Represents an HTTP request.
 
@@ -27,8 +32,8 @@ class Request:
         self.headers = headers
         self.body = body
 
-    # parse and create a new request from a byte string
-    def from_bytes(self, data):
+    @classmethod
+    def from_bytes(cls, data):
         """Parse a byte string into a Request object."""
         # split the request into lines
         lines = data.decode().split('\r\n')
@@ -49,4 +54,21 @@ class Request:
         # parse the body
         body = lines[-1]
 
-        return Request(method, path, headers, body)
+        return cls(method, path, headers, body)
+
+    def to_dict(self) -> dict:
+        """
+        Creates dictionary representation of the Response Class
+
+        Returns:
+            dict: _description_
+        """
+        return {
+            'method': self.method,
+            'path': self.path,
+            'headers': self.headers,
+            'body': self.body,
+        }
+
+    def __repr__(self):
+        return f'<Request: {self.method} {self.path}>'

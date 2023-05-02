@@ -4,22 +4,25 @@
 # File: router.py
 # Description: This file contains the Router class which is used to store
 # the routes and route the requests to the appropriate view function.
+import json
+from typing import List, Tuple, Callable, Dict
+from colorama import Fore, Style
+from copy import deepcopy
 
-from tangerine import Route, Request, Response
-from typing import List, Tuple
+from tangerine import Route, Request, Response, Ctx
+from debug_helpers import generate_diff
+
 
 class Router:
     """The Router class handles HTTP requests and routes them to the appropriate view function."""
-    def __init__(self):
+    def __init__(self, prefix: str = "", debug_level: int = 0):
         self.routes_dict = {}
+        self.prefix: str = prefix
+        self.debug_level: int = debug_level
 
     def add_route(self, method, path, view_func):
         """Add a new route to the router."""
         self.routes_dict[(method, path)] = view_func
-        # for route, view_func in self.routes_dict.items():
-            # print(route, "===========ROUTE==========")
-            # print(view_func, "===========VIEW_FUNC==========")
-        # print(self.routes_dict, "===========SELF_ROUTES==========")
 
     def get(self, path, view_func):
         """Add a new GET route to the router."""
@@ -58,17 +61,43 @@ class Router:
         """Handle the route given the method and path."""
         view_func = self.get_route(method, path)
         if view_func:
+            if self.debug_level > 0:
+                view_func = self.debugger(view_func)
             view_func(ctx)
 
+    def set_debug_level(self, debug_level: int):
+        self.debug_level = debug_level
 
-    def handle_request(self, req: Request, res: Response) -> None:
-        handler = self.get_route(req.method, req.path)
-        if handler:
-            handler(req, res)
-        else:
-            res.status_code = 404
-            res.headers['Content-Type'] = 'text/plain'
-            res.body = '404 Not Found'
+    def debugger(self, middleware: Callable[[Ctx], None]) -> Callable[[Ctx], None]:
+        def wrapper(ctx: Ctx) -> None:
+            if self.debug_level > 0:
+                old_state = ctx.to_dict()
+
+                print(Fore.CYAN + f">>> Debug: Before middleware {middleware.__name__}" + Style.RESET_ALL)
+                print("Current context state:")
+                print(json.dumps(old_state, indent=2, default=str))
+
+                if self.debug_level > 1:
+                    input("Press Enter to continue...")
+
+            middleware(ctx)
+
+            if self.debug_level > 0:
+                new_state = ctx.to_dict()
+
+                print(Fore.CYAN + f"<<< Debug: After middleware {middleware.__name__}" + Style.RESET_ALL)
+                print("New context state:")
+                print(json.dumps(new_state, indent=2, default=str))
+
+                print("Changes:")
+                print(generate_diff(old_state, new_state))
+
+                if self.debug_level > 1:
+                    input("Press Enter to continue...")
+
+        return wrapper
+
+        return wrapper
 
     def routes (self):
         """Get all the routes in the router and collect them into a list and then return it."""

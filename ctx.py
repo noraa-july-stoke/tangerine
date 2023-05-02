@@ -1,7 +1,5 @@
 """
-╔═╗┌┬┐─┐ ┬
-║   │ ┌┴┬┘
-╚═╝ ┴ ┴ └─
+
 
 File: ctx.py
 Description: This file contains the Ctx class which is used to store
@@ -56,6 +54,7 @@ class Ctx:
     """
 
     def __init__(self: T, request: Request, response: Response, keychain: Optional[KeyLime] = None, auth: bool = False) -> None:
+
         """
         Initialize a new Ctx object.
 
@@ -65,6 +64,7 @@ class Ctx:
         :param auth: Optional boolean flag for authentication status.
         :param sock: Socket object.
         """
+
         self.request = request
         self.response = response
         self.keychain = keychain
@@ -207,6 +207,15 @@ class Ctx:
             return self.request.body
         else:
             raise KeyError(f"Invalid key: {key}")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'request': self.request.to_dict(),
+            'response': self.response.to_dict(),
+            'socket': f"<socket fd={self.sock.fileno()}>" if self.sock else None,
+            'auth': self.auth,
+        }
+
 
     def __repr__(self: T) -> str:
         """
