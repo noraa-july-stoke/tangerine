@@ -52,8 +52,7 @@ Bergamot, Buddha's Hand, and Key Limes.
 🔀 - <branch name>: <feature filepath>: <relevant comment>
 
 ```
-
-
+```
 
 So far, this is what you can do with tangerine...app = Tangerine('localhost', 8000, debug_level=2)
 
