@@ -54,7 +54,12 @@ Bergamot, Buddha's Hand, and Key Limes.
 ```
 ```
 
-So far, this is what you can do with tangerine...app = Tangerine('localhost', 8000, debug_level=2)
+So far, this is what you can do with tangerine...
+import json
+from tangerine import Tangerine, Router, Ctx
+
+
+app = Tangerine('localhost', 8000, debug_level=2)
 
 # Create main and API routers with debugging enabled
 main_router = Router(prefix='/api/main', debug=True)
