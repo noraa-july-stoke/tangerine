@@ -29,7 +29,7 @@ T = TypeVar("T")
 logging.basicConfig(level=logging.DEBUG)
 
 class Tangerine:
-    def __init__(self: T, host: str = 'localhost', port: int = 8000, debug: bool = False) -> None:
+    def __init__(self: T, host: str = 'localhost', port: int = 8000, debug_level: int = 0) -> None:
         self.host: str = host
         self.port: int = port
         self.routes: Dict[str,
@@ -39,8 +39,8 @@ class Tangerine:
         self.static_route_pattern = None
         # Add this line to define the regex instance variable
         self.static_route_pattern_re = None
-        self.debug: bool = debug
-        self.routers: List[Router] = []
+        self.debug_level: int = debug_level
+        self.routers: Dict[str, Router] = {}
         # self.set_terminal_background_color()
         # self.config: Dict = None
         # self.ctx = Ctx(self)
@@ -50,13 +50,17 @@ class Tangerine:
 
     def debugger(self, middleware: Callable[[Ctx], None]) -> Callable[[Ctx], None]:
         def wrapper(ctx: Ctx) -> None:
-            if self.debug:
+            if self.debug_level > 0:
                 print(Fore.CYAN + f">>> Debug: Before middleware {middleware.__name__}" + Style.RESET_ALL)
+                if self.debug_level > 1:
+                    input("Press Enter to continue...")
 
             middleware(ctx)
 
-            if self.debug:
+            if self.debug_level > 0:
                 print(Fore.CYAN + f"<<< Debug: After middleware {middleware.__name__}" + Style.RESET_ALL)
+                if self.debug_level > 1:
+                    input("Press Enter to continue...")
 
         return wrapper
 
@@ -76,17 +80,17 @@ class Tangerine:
             self.routes[method] = {}
         self.routes[method][path] = handler
 
+
     def use_router(self: T, router: Router) -> None:
-        self.routers.append(router)
+        self.routers[router.prefix] = router
 
     # serve static files from route pattern and folder directory specified by user
     def static(self: T, route_pattern: str, dir_path: str):
-            self.static_route_pattern = route_pattern
-            self.static_dir_path = dir_path
-            # Use regular expressions to match the requested path against the static route pattern
-            pattern = '^{}(/.*)?$'.format(self.static_route_pattern.rstrip('/'))
-            self.static_route_pattern_re = re.compile(pattern)
-            # print("STATIC ROUTE PATTERN", self.static_route_pattern, self.static_route_pattern_re, self.static_dir_path)
+        self.static_route_pattern = route_pattern
+        self.static_dir_path = dir_path
+        # Use regular expressions to match the requested path against the static route pattern
+        self.static_route_pattern_re = re.compile(route_pattern)
+
 
     def parse_request(self, request: bytes) -> Tuple[str, str, Dict[str, str], Union[str, bytes]]:
         # Split the request into its individual lines
@@ -103,7 +107,7 @@ class Tangerine:
                 headers[key] = value
 
         # Extract the body, if present
-        body = b''
+        body: bytes = b''
         if '\r\n\r\n' in request.decode('utf-8'):
             body = request.decode('utf-8').split('\r\n\r\n')[1].encode('utf-8')
 
@@ -130,21 +134,24 @@ class Tangerine:
             ctx.set_socket(sock)  # Set the socket for the context
             for middleware in self.middlewares:
                 wrapped_middleware = middleware
-                if self.debug:
+                if self.debug_level:
                     wrapped_middleware = self.debugger(middleware)
                 wrapped_middleware(ctx)
 
-            # Check if the requested path matches any of the static routes
+            # Check if the requested path matches any of the static routes using a regular expression
             if self.static_route_pattern_re and self.static_route_pattern_re.match(path):
                 self.handle_static_route(ctx, path)
 
             else:
+                # Check if the requested path matches any of the routes
                 handler = None
-                for router in self.routers:  # Loop through routers to find a handler
-                    handler = router.get_route(method, path)
-                    if handler:
-                        router.handle_route(method, path, ctx)
-                        break
+                # Loop through routers to find a handler
+                for prefix, router in self.routers.items():
+                    if path.startswith(prefix):
+                        handler = router.get_route(method, path[len(prefix):])
+                        if handler:
+                            router.handle_route(method, path[len(prefix):], ctx)
+                            break
                 if not handler:  # No handler found for the requested route, return 404 Not Found
                     self.handle_not_found(ctx)
 
@@ -159,7 +166,7 @@ class Tangerine:
             inputs.remove(sock)
 
     def handle_static_route(self, ctx: Ctx, path: str) -> None:
-        file_path: str = os.path.join(self.static_dir_path, path[len(self.static_route_pattern):].lstrip('/'))
+        file_path: str = os.path.join(self.static_dir_path, path.lstrip('/'))
 
         if not os.path.exists(file_path) or not os.path.isfile(file_path):
             ctx.send(404, 'File not found')
@@ -177,7 +184,7 @@ class Tangerine:
     def run(self) -> None:
         inputs = [self.server_socket]
         outputs = []
-        print_success(self.port, self.host, self.debug)
+        print_success(self.port, self.host, self.debug_level)
         while inputs:
             readable, writable, exceptional = select.select(inputs, outputs, inputs)
 

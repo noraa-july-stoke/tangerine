@@ -11,9 +11,10 @@ from print_messages import print_debug
 
 class Router:
     """The Router class handles HTTP requests and routes them to the appropriate view function."""
-    def __init__(self, debug: bool = False):
+    def __init__(self, prefix: str = "", debug: bool = False):
         self.routes_dict = {}
         self.debug = debug
+        self.prefix: str = prefix
 
     def add_route(self, method, path, view_func):
         """Add a new route to the router."""
