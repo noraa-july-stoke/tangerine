@@ -22,7 +22,8 @@ from response import Response
 from ctx import Ctx
 from route import Route
 from router import Router
-from print_messages import print_success, print_debug
+from print_messages import print_success
+from debug_helpers import generate_diff, copy_context_without_socket
 # from tangerine import Request, Response, Ctx, PrintMessage, Route, Router, TangerineError
 
 T = TypeVar("T")
@@ -34,7 +35,7 @@ class Tangerine:
         self.port: int = port
         self.routes: Dict[str,
                           Dict[str, Callable[[Request, Response], None]]] = {}
-        self.middlewares: List[Callable[[Request, Response], None]] = []
+        self.middlewares: List[Callable[[Ctx], None]] = []
         self._create_socket()
         self.static_route_pattern = None
         # Add this line to define the regex instance variable
@@ -51,22 +52,35 @@ class Tangerine:
     def debugger(self, middleware: Callable[[Ctx], None]) -> Callable[[Ctx], None]:
         def wrapper(ctx: Ctx) -> None:
             if self.debug_level > 0:
+                old_state = copy_context_without_socket(ctx)
+
                 print(Fore.CYAN + f">>> Debug: Before middleware {middleware.__name__}" + Style.RESET_ALL)
+                print("Current context state:")
+                print(json.dumps(old_state, indent=2, default=str))
+
                 if self.debug_level > 1:
                     input("Press Enter to continue...")
 
             middleware(ctx)
 
             if self.debug_level > 0:
+                new_state = copy_context_without_socket(ctx)
+
                 print(Fore.CYAN + f"<<< Debug: After middleware {middleware.__name__}" + Style.RESET_ALL)
+                print("New context state:")
+                print(json.dumps(new_state, indent=2, default=str))
+
+                print("Changes:")
+                print(generate_diff(old_state, new_state))
+
                 if self.debug_level > 1:
                     input("Press Enter to continue...")
 
         return wrapper
 
+
     def use(self, middleware: Callable[[Request, Response], None]) -> None:
         self.middlewares.append(middleware)
-
 
     def _create_socket(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -82,6 +96,7 @@ class Tangerine:
 
 
     def use_router(self: T, router: Router) -> None:
+        router.set_debug_level(self.debug_level)
         self.routers[router.prefix] = router
 
     # serve static files from route pattern and folder directory specified by user
@@ -103,15 +118,17 @@ class Tangerine:
         headers = {}
         for line in lines[1:]:
             if line:
-                key, value = line.split(': ')
+                key, value = line.split(': ', 1)
                 headers[key] = value
 
         # Extract the body, if present
         body: bytes = b''
         if '\r\n\r\n' in request.decode('utf-8'):
             body = request.decode('utf-8').split('\r\n\r\n')[1].encode('utf-8')
-
+        # !@#$ interesting print to show how this stuff works
+        # print(method, headers, body)
         return method, path, headers, body
+
 
     def handle_new_client(self, client_socket: socket.socket, inputs: List[socket.socket]) -> None:
         inputs.append(client_socket)

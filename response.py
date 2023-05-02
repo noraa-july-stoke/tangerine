@@ -79,7 +79,7 @@ class Response:
         The Response class is the class that is returned from the view function.
         It provides a way to construct the response that will be sent to the client.
     """
-    def __init__(self, status_code=200, headers=None, body=''):
+    def __init__(self, status_code=404, headers=None, body=''):
         # Set the status code, headers, and body of the response.
         self.status_code = status_code
         self.headers = headers or {}
@@ -102,16 +102,32 @@ class Response:
 
     def to_bytes(self: T) -> bytes:
         status_line = f'HTTP/1.1 {self.status_code} {STATUS_CODES[self.status_code]}'
+        # set key value pairs for headers
         headers = '\r\n'.join([f'{k}: {v}' for k, v in self.headers.items()])
         response_text = f'{status_line}\r\n{headers}\r\n\r\n'
 
-        return response_text.encode('utf-8') + self.body  # Encode the response_text
+        # Encode the response_text and the body
+        return response_text.encode('utf-8') + (self.body.encode('utf-8') if isinstance(self.body, str) else self.body)
+
 
 
     def send(self, conn):
         # Send the response to the client.
         # This function sends the response to the client.
         conn.sendall(self.to_bytes())
+
+    def to_dict(self) -> dict:
+        """
+        Creates dictionary representation of the Response Class
+
+        Returns:
+            dict: _description_
+        """
+        return {
+            'status_code': self.status_code,
+            'headers': self.headers,
+            'body': self.body,
+        }
 
     def __repr__(self):
         return f'<Response: {self.status_code}>'

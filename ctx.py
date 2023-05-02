@@ -1,7 +1,5 @@
 """
-╔═╗┌┬┐─┐ ┬
-║   │ ┌┴┬┘
-╚═╝ ┴ ┴ └─
+
 
 File: ctx.py
 Description: This file contains the Ctx class which is used to store
@@ -209,6 +207,15 @@ class Ctx:
             return self.request.body
         else:
             raise KeyError(f"Invalid key: {key}")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'request': self.request.to_dict(),
+            'response': self.response.to_dict(),
+            # 'keychain': self.keychain.to_dict() if self.keychain else None,
+            'auth': self.auth,
+        }
+
 
     def __repr__(self: T) -> str:
         """
