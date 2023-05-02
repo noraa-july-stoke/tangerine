@@ -56,6 +56,7 @@ class Ctx:
     """
 
     def __init__(self: T, request: Request, response: Response, keychain: Optional[KeyLime] = None, auth: bool = False) -> None:
+
         """
         Initialize a new Ctx object.
 
@@ -65,6 +66,7 @@ class Ctx:
         :param auth: Optional boolean flag for authentication status.
         :param sock: Socket object.
         """
+
         self.request = request
         self.response = response
         self.keychain = keychain

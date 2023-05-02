@@ -1,140 +1,10 @@
-# # ╔╦╗╔═╗╔╗╔╔═╗╔═╗╦═╗╦╔╗╔╔═╗
-# #  ║ ╠═╣║║║║ ╦║╣ ╠╦╝║║║║║╣
-# #  ╩ ╩ ╩╝╚╝╚═╝╚═╝╩╚═╩╝╚╝╚═╝
-# # File: tangerine.py
-# # Description: This file contains the Tangerine class which is used to
-# # create a Tangerine application.
-
-
-# # TODO: add comments for all imports explaining what the module does
-# # provides infrastructure for writing asynchronous code using coroutines
-# import asyncio
-# # provides access to low-level networking primitives
-# import socket
-# # provides access to high-level networking primitives
-# import socketserver
-# # provides logging facilities for use in library code
-# import logging
-# # provides access to type hints
-# from typing import Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar, Union
-# T = TypeVar("T")
-# # provides access to the current interpreter stack frame
-# import functools
-# # provides access to inspecting live objects
-# import inspect
-# # provides json encoding and decoding
-# import json
-# # provides access to the operating system
-# import os
-# # provides a server for HTTP
-# import http.server
-# import sys
-# import weakref
-# import mimetypes
-# import http
-# from collections.abc import Iterator as _abc_Iterator
-# from datetime import timedelta
-# from itertools import chain
-# from threading import Lock
-# from types import TracebackType
-# import click
-
-# from errors import TangerineError
-# from request import Request
-# from response import Response
-# from ctx import Ctx
-# from route import Route
-# from router import Router
-
-# logging.basicConfig(level=logging.DEBUG)
-
-# class Tangerine:
-
-#     def __init__(self: T, host: str = 'localhost', port: int = 8000) -> None:
-#         self.host: str = host
-#         self.port: int = port
-#         self.ctx: Ctx = Ctx
-#         self.middleware: List[Tuple[Tuple, Callable[[Request, Response], None]]] = []
-
-#     def use_router(self: T, middleware_funcs: List[Callable[[Request, Response], None]]) -> None:
-#         """ Takes in a middleware list and appends it to self.middleware """
-#         for method_route, view_func in middleware_funcs:
-#             # print(method_route, view_func,  "======METHOD_ROUTE, VIEW FUNC=====")
-#             if inspect.isfunction(view_func) and view_func.__name__ == '<lambda>':
-#                 l_func = self.wrap_lambda(view_func)
-#                 # print(l_func,  "======L_FUNC=====")
-#                 self.middleware.append((method_route, self.wrap_lambda(view_func)))
-#             else:
-#                 self.middleware.append((method_route, view_func))
-
-#     def wrap_lambda(self: T, func: Callable) -> Callable:
-#         func_name = f'lambda_{id(func)}'
-#         wrapped_func = lambda *args, **kwargs: func(*args, **kwargs)
-#         wrapped_func.__name__ = func_name
-#         return wrapped_func
-
-#     def static(self: T, dir_path: str):
-#         def static_handler(ctx: Ctx):
-#             # print(dir_path, "============STATIC=========")
-
-#             file_path: str = os.path.join(dir_path, ctx.req.path.lstrip('/'))
-
-#             if not os.path.exists(file_path) or not os.path.isfile(file_path):
-#                 ctx.send(404, 'File not found')
-#                 return
-
-#             with open(file_path, 'rb') as f:
-#                 data = f.read()
-
-#             ctx.send(data, content_type='text/html')
-
-#         return static_handler
-
-#     async def handle_client(self: T, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
-#         print(reader, writer, "===========READ/WRITE==========")
-#         while not reader.at_eof():
-#             data = await reader.read(1024)
-#             if data.startswith(b'GET / HTTP/1.1\r\n'):
-#                 try:
-#                     res = Response(status_code=200, body='Hello, World!')
-#                     writer.write(res.render().encode('utf-8'))
-#                     await writer.drain()
-#                 except TangerineError as e:
-#                     res = Response(
-#                         status_code=e.status_code,
-#                         body=json.dumps(e.to_dict())
-#                     )
-#                     writer.write(res.render().encode('utf-8'))
-#                     await writer.drain()
-#         writer.close()
-
-
-#     async def run_server(self: T) -> None:
-#         self.router = Router()
-#         Handler = http.server.SimpleHTTPRequestHandler
-
-#         httpd = socketserver.TCPServer((self.host, self.port), Handler)
-
-#         logging.info(f' 🍊 Server sprouted @ {self.host}:{self.port}... 🌱🌱🌱')
-#         logging.info(' Press Ctrl+C to stop the server')
-#         httpd.serve_forever()
-
-
-#     async def __aenter__(self: T) -> T:
-#         await self.run_server()
-#         return self
-
-#     async def __aexit__(self: T, exc_type: Type[BaseException], exc_val: BaseException, exc_tb: TracebackType) -> None:
-#         pass
-
-
-#     def start(self: T) -> None:
-#         try:
-#             asyncio.run(self.__aenter__())
-#         except KeyboardInterrupt:
-#             pass
-#         finally:
-#             asyncio.run(self.__aexit__(None, None, None))
+# ╔╦╗╔═╗╔╗╔╔═╗╔═╗╦═╗╦╔╗╔╔═╗
+#  ║ ╠═╣║║║║ ╦║╣ ╠╦╝║║║║║╣
+#  ╩ ╩ ╩╝╚╝╚═╝╚═╝╩╚═╩╝╚╝╚═╝
+# File: tangerine.py
+# Description: This file contains the Tangerine class which is used to
+# create a Tangerine application.
+#==============================================================================
 
 import socket
 import select
@@ -152,12 +22,11 @@ from response import Response
 from ctx import Ctx
 from route import Route
 from router import Router
-from print_messages import PrintMessage
+from print_messages import print_success, print_debug
+# from tangerine import Request, Response, Ctx, PrintMessage, Route, Router, TangerineError
 
 T = TypeVar("T")
 logging.basicConfig(level=logging.DEBUG)
-
-
 
 class Tangerine:
     def __init__(self: T, host: str = 'localhost', port: int = 8000, debug: bool = False) -> None:
@@ -171,10 +40,29 @@ class Tangerine:
         # Add this line to define the regex instance variable
         self.static_route_pattern_re = None
         self.debug: bool = debug
+        self.routers: List[Router] = []
+        # self.set_terminal_background_color()
         # self.config: Dict = None
         # self.ctx = Ctx(self)
 
     # def
+
+
+    def debugger(self, middleware: Callable[[Ctx], None]) -> Callable[[Ctx], None]:
+        def wrapper(ctx: Ctx) -> None:
+            if self.debug:
+                print(Fore.CYAN + f">>> Debug: Before middleware {middleware.__name__}" + Style.RESET_ALL)
+
+            middleware(ctx)
+
+            if self.debug:
+                print(Fore.CYAN + f"<<< Debug: After middleware {middleware.__name__}" + Style.RESET_ALL)
+
+        return wrapper
+
+    def use(self, middleware: Callable[[Request, Response], None]) -> None:
+        self.middlewares.append(middleware)
+
 
     def _create_socket(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -189,7 +77,7 @@ class Tangerine:
         self.routes[method][path] = handler
 
     def use_router(self: T, router: Router) -> None:
-        self.router = router
+        self.routers.append(router)
 
     # serve static files from route pattern and folder directory specified by user
     def static(self: T, route_pattern: str, dir_path: str):
@@ -237,22 +125,27 @@ class Tangerine:
             res = Response()
 
             # Apply the middleware to the Request and Response objects
-            for middleware in self.middlewares:
-                middleware(req, res)
 
             ctx = Ctx(req, res)
             ctx.set_socket(sock)  # Set the socket for the context
+            for middleware in self.middlewares:
+                wrapped_middleware = middleware
+                if self.debug:
+                    wrapped_middleware = self.debugger(middleware)
+                wrapped_middleware(ctx)
 
             # Check if the requested path matches any of the static routes
             if self.static_route_pattern_re and self.static_route_pattern_re.match(path):
                 self.handle_static_route(ctx, path)
 
             else:
-                handler = self.router.get_route(method, path)
-                if handler:
-                    self.router.handle_route(method, path, ctx)
-                else:
-                    # No handler found for the requested route, return 404 Not Found
+                handler = None
+                for router in self.routers:  # Loop through routers to find a handler
+                    handler = router.get_route(method, path)
+                    if handler:
+                        router.handle_route(method, path, ctx)
+                        break
+                if not handler:  # No handler found for the requested route, return 404 Not Found
                     self.handle_not_found(ctx)
 
             # Send the HTTP response back to the client
@@ -284,8 +177,7 @@ class Tangerine:
     def run(self) -> None:
         inputs = [self.server_socket]
         outputs = []
-        PrintMessage(self.port, self.host, self.debug)
-
+        print_success(self.port, self.host, self.debug)
         while inputs:
             readable, writable, exceptional = select.select(inputs, outputs, inputs)
 
