@@ -48,7 +48,7 @@ from pymongo import MongoClient
 
 #=============================TEST3==============================
 
-app = Tangerine('localhost', 8000, debug_level=2)
+app = Tangerine('localhost', 8000)
 
 client = MongoClient('mongodb://localhost:27017/')
 
