@@ -16,18 +16,37 @@ keychain = KeyLime({
 auth = Yuzu(keychain, client)
 app.static('^/(?!api).*$', './public')
 
+# ==================== MIDDLEWARE ====================
+def jwt_middleware(ctx: Ctx, auth: Yuzu) -> None:
+    request_path = ctx.request.path
+    if request_path.startswith('/api') and request_path not in ['/api/login', '/api/signup']:
+        token = ctx.get_req_header("Authorization")
+        if not token:
+            ctx.body = json.dumps({"message": "Missing token"})
+            ctx.send(401, content_type='application/json')
+            return
+
+        decoded_token = auth.verify_auth_token(token)
+        if decoded_token:
+            ctx["user"] = decoded_token
+        else:
+            ctx.body = json.dumps({"message": "Invalid token"})
+            ctx.send(401, content_type='application/json')
+
 # ==================== AUTH HANDLERS ====================
 def api_hello_world(ctx: Ctx) -> None:
     ctx.body = json.dumps({"message": "Hello from API!"})
     ctx.send(200, content_type='application/json')
 
 def signup(ctx: Ctx, auth: Yuzu) -> None:
-    user_data = {
-        'name': 'John Doe',
-        'email': 'john.doe@example.com',
-        'username': 'admin',
-        'password': 'password'
-    }
+    body_str = ctx['body']  # decode bytes to str
+    user_data = json.loads(body_str)  # parse str to dict
+    # user_data = {
+    #     'name': 'John Doe',
+    #     'email': 'john.doe@example.com',
+    #     'username': 'admin',
+    #     'password': 'password'
+    # }
 
     created_user = auth.sign_up(user_data)
     if created_user:
@@ -38,15 +57,18 @@ def signup(ctx: Ctx, auth: Yuzu) -> None:
 
 
 def login(ctx: Ctx, auth: Yuzu) -> None:
-    body_str = ctx['body'] # decode bytes to str
-    print(body_str)
+    body_str = ctx['body']  # decode bytes to str
     body_dict = json.loads(body_str)  # parse str to dict
     username = body_dict.get('username')
     password = body_dict.get('password')
 
-    if auth.login(username, password):
-        ctx.body = json.dumps({"message": "Logged in successfully"})
+    user_id, token = auth.login(username, password)
+    if token:
+        ctx["auth"] = auth
+        ctx.body = json.dumps({"message": "Logged in successfully", "token": token})
         ctx.send(200, content_type='application/json')
+        # Set the token as a cookie or in the response headers
+        ctx.set_res_header("Set-Cookie", f"auth_token={token}; HttpOnly; Path=/")
     else:
         ctx.body = json.dumps({"message": "Invalid credentials"})
         ctx.send(401, content_type='application/json')
@@ -89,6 +111,6 @@ api_router.get('/hello', api_hello_world)
 api_router.get('/users', lambda ctx: get_and_delete_users(ctx, client))
 
 
-
+app.use(lambda ctx: jwt_middleware(ctx, auth))
 app.use_router(api_router)
 app.start()
