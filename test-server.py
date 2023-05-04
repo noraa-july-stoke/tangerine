@@ -82,18 +82,27 @@ def api_version(ctx: Ctx) -> None:
 app.use(api_version)
 
 def create_user(ctx: Ctx) -> None:
-    db = client['mydatabase']
-    users = db['users']
-    body = ctx['body']
-    user_data = {
-        'name': 'John Doe',
-        'email': 'john.doe@example.com'
-    }
-    result = users.insert_one(user_data)
-    print(f'User created with id: {result.inserted_id}')
-    user_data['_id'] = str(result.inserted_id)  # Convert ObjectId to string
-    ctx.body = json.dumps(user_data)
-    ctx.send(201, content_type='application/json')
+    try:
+        db = client['mydatabase']
+        users = db['users']
+        print('here1')
+
+        body = ctx['body']
+        user_data = {
+            'name': 'John Doe',
+            'email': 'john.doe@example.com'
+        }
+
+        result = users.insert_one(user_data)
+        print(user_data, "USER_DATA=====================")
+        print(f'User created with id: {result.inserted_id}')
+        user_data['_id'] = str(result.inserted_id)  # Convert ObjectId to string
+        ctx.body = json.dumps(user_data)
+        ctx.send(201, content_type='application/json')
+    except Exception as e:
+        print(f'Error creating user: {e}')
+        ctx.send(500, content_type='application/json')
+
 
 
 def delete_user(ctx: Ctx) -> None:

@@ -90,15 +90,11 @@ def generate_diff(old_state: Dict, new_state: Dict) -> str:
 
     for key in new_state:
         if key not in old_state or not compare_nested_objects(old_state[key], new_state[key]):
-            if key not in old_state:
-                diff[key] = {
-                    'old': 'none',
-                    'new': new_state[key]
-                }
+            if isinstance(old_state[key], dict) and isinstance(new_state[key], dict):
+                sub_diff = {k: (old_state[key][k], new_state[key][k]) for k in new_state[key] if k not in old_state[key] or old_state[key][k] != new_state[key][k]}
+                if sub_diff:
+                    diff[key] = sub_diff
             else:
-                diff[key] = {
-                    'old': old_state[key],
-                    'new': new_state[key]
-                }
+                diff[key] = (old_state[key], new_state[key])
 
     return json.dumps(diff, indent=2, default=str)

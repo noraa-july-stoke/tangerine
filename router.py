@@ -73,7 +73,7 @@ class Router:
             if self.debug_level > 0:
                 old_state = ctx.to_dict()
 
-                print(Fore.CYAN + f">>> Debug: Before middleware {middleware.__name__}" + Style.RESET_ALL)
+                print(Fore.CYAN + f">>> Debug: Before route handler: {middleware.__name__}" + Style.RESET_ALL)
                 print("Current context state:")
                 print(json.dumps(old_state, indent=2, default=str))
 
@@ -85,7 +85,7 @@ class Router:
             if self.debug_level > 0:
                 new_state = ctx.to_dict()
 
-                print(Fore.CYAN + f"<<< Debug: After middleware {middleware.__name__}" + Style.RESET_ALL)
+                print(Fore.CYAN + f"<<< Debug: After route handler: {middleware.__name__}" + Style.RESET_ALL)
                 print("New context state:")
                 print(json.dumps(new_state, indent=2, default=str))
 
@@ -97,7 +97,6 @@ class Router:
 
         return wrapper
 
-        return wrapper
 
     def routes (self):
         """Get all the routes in the router and collect them into a list and then return it."""

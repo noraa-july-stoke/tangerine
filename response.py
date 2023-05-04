@@ -6,6 +6,7 @@
 # the response data. This is used to determine the response status code,
 # headers, and body.
 from typing import TypeVar, Dict, Optional
+import json
 
 T = TypeVar("T")
 STATUS_CODES = {
@@ -76,7 +77,7 @@ STATUS_CODES = {
 
 class Response:
     """
-        The Response class is the class that is returned from the view function.
+        The Response class is the class that is stores in the context object.
         It provides a way to construct the response that will be sent to the client.
     """
     def __init__(self, status_code=404, headers=None, body=''):
@@ -123,10 +124,14 @@ class Response:
         Returns:
             dict: _description_
         """
+        try:
+            body_json = json.loads(self.body)
+        except json.JSONDecodeError:
+            body_json = self.body
         return {
             'status_code': self.status_code,
             'headers': self.headers,
-            'body': self.body,
+            'body': body_json,
         }
 
     def __repr__(self):
