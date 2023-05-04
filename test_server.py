@@ -39,6 +39,7 @@ def signup(ctx: Ctx, auth: Yuzu) -> None:
 
 def login(ctx: Ctx, auth: Yuzu) -> None:
     body_str = ctx['body'] # decode bytes to str
+    print(body_str)
     body_dict = json.loads(body_str)  # parse str to dict
     username = body_dict.get('username')
     password = body_dict.get('password')

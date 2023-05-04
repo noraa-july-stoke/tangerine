@@ -12,7 +12,6 @@ from copy import deepcopy
 from tangerine import Route, Request, Response, Ctx
 from debug_helpers import generate_diff
 
-
 class Router:
     """The Router class handles HTTP requests and routes them to the appropriate view function."""
     def __init__(self, prefix: str = "", debug_level: int = 0):
