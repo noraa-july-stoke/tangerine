@@ -14,9 +14,8 @@ class Yuzu:
         self.auth = False
         self.user = None
 
-        # Access the required configurations from the keychain
-        self.db_connection_string = self.keychain.get_key('db_connection_string')
-        self.google_cloud = self.keychain.get_key('google_cloud')
+    def get_config(self, key_name: str) -> str:
+        return self.keychain.get_key(key_name)
 
     def setup_database(self):
         # Set up the database using self.db_connection_string
@@ -26,10 +25,58 @@ class Yuzu:
         # Set up other configurations using self.google_cloud or other configs from the keychain
         pass
 
-    def login(self, user):
-        # Implement login logic here
-        self.auth = True
-        self.user = user
+    def authenticate(self, username: str, password: str) -> bool:
+        try:
+            db = self.client['mydatabase']
+            users = db['users']
+
+            query = {'username': username}
+            user = users.find_one(query)
+
+            if user and user['password'] == password:
+                return True
+            else:
+                return False
+
+        except Exception as e:
+            print(f'Error authenticating user: {e}')
+            return False
+
+    def sign_up(self, user_data: dict) -> dict:
+        try:
+            db = self.client['mydatabase']
+            users = db['users']
+
+            result = users.insert_one(user_data)
+            print(f'User created with id: {result.inserted_id}')
+            user_data['_id'] = str(result.inserted_id)  # Convert ObjectId to string
+            return user_data
+
+        except Exception as e:
+            print(f'Error creating user: {e}')
+            return None
+
+    def login(self, username: str, password: str) -> bool:
+        if self.authenticate(username, password):
+            try:
+                db = self.client['mydatabase']
+                users = db['users']
+
+                query = {'username': username}
+                user = users.find_one(query)
+
+                if user:
+                    self.auth = True
+                    self.user = user
+                    return True
+                else:
+                    return False
+
+            except Exception as e:
+                print(f'Error logging in user: {e}')
+                return False
+        else:
+            return False
 
     def logout(self):
         self.auth = False
