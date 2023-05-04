@@ -86,15 +86,20 @@ def compare_nested_objects(old: Any, new: Any) -> bool:
 #     return json.dumps(diff, indent=2, default=str)
 
 def generate_diff(old_state: Dict, new_state: Dict) -> str:
-    diff = {}
+    old_diff = {}
+    new_diff = {}
 
     for key in new_state:
         if key not in old_state or not compare_nested_objects(old_state[key], new_state[key]):
             if isinstance(old_state[key], dict) and isinstance(new_state[key], dict):
-                sub_diff = {k: (old_state[key][k], new_state[key][k]) for k in new_state[key] if k not in old_state[key] or old_state[key][k] != new_state[key][k]}
-                if sub_diff:
-                    diff[key] = sub_diff
+                sub_old_diff = {k: old_state[key][k] for k in new_state[key] if k not in old_state[key] or old_state[key][k] != new_state[key][k]}
+                sub_new_diff = {k: new_state[key][k] for k in new_state[key] if k not in old_state[key] or old_state[key][k] != new_state[key][k]}
+                if sub_old_diff:
+                    old_diff[key] = sub_old_diff
+                if sub_new_diff:
+                    new_diff[key] = sub_new_diff
             else:
-                diff[key] = (old_state[key], new_state[key])
+                old_diff[key] = old_state[key]
+                new_diff[key] = new_state[key]
 
-    return json.dumps(diff, indent=2, default=str)
+    return json.dumps({'old': old_diff, 'new': new_diff}, indent=2, default=str)

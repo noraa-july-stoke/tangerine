@@ -124,9 +124,9 @@ class Tangerine:
                 headers[key] = value
 
         # Extract the body, if present
-        body: bytes = b''
+        body: str = ''
         if '\r\n\r\n' in request.decode('utf-8'):
-            body = request.decode('utf-8').split('\r\n\r\n')[1].encode('utf-8')
+            body = request.decode('utf-8').split('\r\n\r\n')[1]
         # !@#$ interesting print to show how this stuff works
         # print(method, headers, body)
         return method, path, headers, body

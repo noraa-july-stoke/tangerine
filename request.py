@@ -52,9 +52,10 @@ class Request:
             headers[header[0]] = header[1]
 
         # parse the body
-        body = lines[-1]
+        body = '\r\n'.join(lines[lines.index('') + 1:]).strip()
 
         return cls(method, path, headers, body)
+
 
     def to_dict(self) -> dict:
         """

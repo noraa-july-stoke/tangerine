@@ -5,12 +5,13 @@
 # Description: This file contains the Auth class which is used to store the
 # auth status of a user. This is used to determine if a user is logged in
 # or not. And also provides the logic for logging in and out.
-
+import bcrypt
 from key_lime import KeyLime
 
 class Yuzu:
-    def __init__(self, keychain: KeyLime):
+    def __init__(self, keychain: KeyLime, client):
         self.keychain = keychain
+        self.client = client
         self.auth = False
         self.user = None
 
@@ -33,7 +34,7 @@ class Yuzu:
             query = {'username': username}
             user = users.find_one(query)
 
-            if user and user['password'] == password:
+            if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
                 return True
             else:
                 return False
@@ -42,12 +43,27 @@ class Yuzu:
             print(f'Error authenticating user: {e}')
             return False
 
-    def sign_up(self, user_data: dict) -> dict:
+
+# >>> import bcrypt
+# >>> password = b"super secret password"
+# >>> # Hash a password for the first time, with a randomly-generated salt
+# >>> hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+# >>> # Check that an unhashed password matches one that has previously been
+# >>> # hashed
+# >>> if bcrypt.checkpw(password, hashed):
+# ...     print("It Matches!")
+# ... else:
+# ...     print("It Does not Match :(")
+
+    def sign_up(self,user_data: dict) -> dict:
         try:
+            hashed = bcrypt.hashpw(user_data['password'].encode(), bcrypt.gensalt())
+            user_data['password'] = hashed.decode()  # Convert bytes to string
+
             db = self.client['mydatabase']
             users = db['users']
-
             result = users.insert_one(user_data)
+
             print(f'User created with id: {result.inserted_id}')
             user_data['_id'] = str(result.inserted_id)  # Convert ObjectId to string
             return user_data
@@ -56,6 +72,13 @@ class Yuzu:
             print(f'Error creating user: {e}')
             return None
 
+
+
+
+# >>> if bcrypt.checkpw(password, hashed):
+# ...     print("It Matches!")
+# ... else:
+# ...     print("It Does not Match :(")
     def login(self, username: str, password: str) -> bool:
         if self.authenticate(username, password):
             try:
