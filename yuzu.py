@@ -30,12 +30,12 @@ class Yuzu:
         # Set up other configurations using self.google_cloud or other configs from the keychain
         pass
 
-    def authenticate(self, username: str, password: str) -> bool:
+    def authenticate(self, email: str, password: str) -> bool:
         try:
             db = self.client['mydatabase']
             users = db['users']
 
-            query = {'username': username}
+            query = {'email': email}
             user = users.find_one(query)
 
             if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
@@ -47,26 +47,28 @@ class Yuzu:
             print(f'Error authenticating user: {e}')
             return False
 
-    def generate_auth_token(self, user_id: str, username: str) -> str:
-        secret_key = self.get_config('jwt_secret')
+    def generate_auth_token(self, user_id: str, email: str) -> str:
+        secret_key = self.get_config('SECRET_KEY')
+        print("GENERATE AUTH TOKEN VARIABLES", user_id, email, secret_key)
         token_payload = {
             "user_id": user_id,
-            "username": username,
+            "email": email,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)
         }
         return jwt.encode(token_payload, secret_key, algorithm='HS256')
 
-    def verify_auth_token(self, token: str) -> bool:
+    def verify_auth_token(self, token: str) -> dict:
         try:
-            secret_key = self.get_config('jwt_secret')
+            secret_key = self.get_config('SECRET_KEY')
             decoded_token = jwt.decode(token, secret_key, algorithms=['HS256'])
             return decoded_token
         except jwt.ExpiredSignatureError:
             print("Token has expired")
-            return False
+            return None
         except jwt.InvalidTokenError:
             print("Invalid token")
-            return False
+            return None
+
 
 
 
@@ -89,20 +91,24 @@ class Yuzu:
 
 
 
-    def login(self, username: str, password: str) -> Tuple[str, str]:
-        if self.authenticate(username, password):
+    def login(self, email: str, password: str) -> Tuple[str, str]:
+        print(self.authenticate(email, password))
+        if self.authenticate(email, password):
             try:
                 db = self.client['mydatabase']
                 users = db['users']
 
-                query = {'username': username}
-                user = users.find_one(query)
+                query = {'email': email}
+                user_data = users.find_one(query)
+                print(user_data)
 
-                if user:
+                if user_data:
                     self.auth = True
-                    self.user = user
-                    token = self.generate_auth_token(str(user["_id"]), username)
-                    return str(user["_id"]), token
+                    self.user = user_data
+                    print(self.user, "SELF.USER")
+                    token = self.generate_auth_token(str(user_data["_id"]), email)
+                    print(token, "TOKEN!!!!!!!!!!!!!")
+                    return str(user_data["_id"]), token
                 else:
                     return None, None
 

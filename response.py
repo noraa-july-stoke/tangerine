@@ -111,7 +111,6 @@ class Response:
         return response_text.encode('utf-8') + (self.body.encode('utf-8') if isinstance(self.body, str) else self.body)
 
 
-
     def send(self, conn):
         # Send the response to the client.
         # This function sends the response to the client.

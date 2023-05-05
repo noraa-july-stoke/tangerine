@@ -6,12 +6,6 @@ body {
     padding: 0;
 }
 
-header {
-    background-color: #fff;
-    border-bottom: 1px solid #ccc;
-    padding: 1em;
-    text-align: center;
-}
 
 h1 {
     margin: 0;
@@ -89,3 +83,113 @@ button:hover {
     background-color: #555;
     cursor: pointer;
 }
+
+
+form {
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+form h2 {
+  margin-bottom: 1rem;
+}
+
+form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+form input[type="email"],
+form input[type="password"] {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+
+form input[type="email"]:focus,
+form input[type="password"]:focus {
+  outline: none;
+  border-color: #333;
+}
+
+form button[type="submit"] {
+  display: block;
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+form button[type="submit"]:hover {
+  background-color: #555;
+}
+
+.form-container {
+  padding-top: 50px;
+}
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f7f7f7;
+    }
+    .form-container {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    form {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    form h2 {
+      margin-bottom: 1rem;
+    }
+    form label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    form input[type="email"],
+    form input[type="password"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+    }
+    form input[type="email"]:focus,
+    form input[type="password"]:focus {
+      outline: none;
+      border-color: #333;
+    }
+    form button[type="submit"] {
+      display: block;
+      margin: 0 auto;
+      padding: 0.5rem 1rem;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    form button[type="submit"]:hover {
+      background-color: #555;
+    }

@@ -1,43 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to my site!</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <h1>Welcome to Tangerine!</h1>
-    </header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test API</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    form {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body class="hero">
+  <h1>Welcome To Tangerine</h1>
+  <h2>Use the forms below to try out the auth features</h2>
+  <div class="form-container">
+  <form id="loginForm">
+    <h2>Login</h2>
+    <label for="loginEmail">Email:</label>
+    <input type="email" id="loginEmail" required>
+    <br>
+    <label for="loginPassword">Password:</label>
+    <input type="password" id="loginPassword" required>
+    <br>
+    <button type="submit">Login</button>
+  </form>
+  <form id="signupForm">
+    <h2>Signup</h2>
+    <label for="signupEmail">Email:</label>
+    <input type="email" id="signupEmail" required>
+    <br>
+    <label for="signupPassword">Password:</label>
+    <input type="password" id="signupPassword" required>
+    <br>
+    <button type="submit">Signup</button>
+  </form>
+  <div id="protectedContent" style="display: none;">
+    <h2>Protected Content</h2>
+    <p id="content"></p>
+  </div>
 
-    <main>
-      <section class="hero">
-        <h2>A new Python web framework by Noraa Stoke</h2>
-        <button>Learn More</button>
-      </section>
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const protectedContent = document.getElementById("protectedContent");
+    const content = document.getElementById("content");
 
-      <section class="features">
-        <h2>Our Features</h2>
-        <ul>
-          <li>Fast and reliable</li>
-          <li>Easy to use</li>
-          <li>Secure and private</li>
-        </ul>
-      </section>
+    let token = null;
 
-      <section class="testimonials">
-        <h2>What People Are Saying</h2>
-        <blockquote>
-          "This framework is amazing! I can't believe how easy it is to use."
-        </blockquote>
-        <cite>- Jane Doe</cite>
-      </section>
-    </main>
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    <footer>
-      <p>&copy; 2023 My Site</p>
-    </footer>
-  </body>
+      if (response.status === 200) {
+        const data = await response.json();
+        token = data.token;
+        alert("Login successful!");
+      } else {
+        console.log(response)
+        alert("Login failed!");
+      }
+    });
+
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.status < 299) {
+        alert("Signup successful!");
+      } else {
+        alert("Signup failed!");
+      }
+    });
+
+    async function fetchProtectedContent() {
+      if (!token) {
+        alert("Please login first!");
+        return;
+      }
+
+    const response = await fetch("/api/protected", {
+    headers: {
+        "Authorization": `${token}`,
+    },
+    });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        content.innerText = JSON.stringify(data, null, 2);
+        protectedContent.style.display= "block";
+      } else {
+        protectedContent.style.display = "none";
+        alert("Failed to fetch protected content!");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const fetchButton = document.createElement("button");
+      fetchButton.innerText = "Fetch Protected Content";
+      fetchButton.addEventListener("click", fetchProtectedContent);
+      document.body.appendChild(fetchButton);
+    });
+  </script>
+  </div>
+</body>
 </html>

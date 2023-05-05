@@ -120,16 +120,20 @@ class Tangerine:
         headers = {}
         for line in lines[1:]:
             if line:
-                key, value = line.split(': ', 1)
-                headers[key] = value
+                parts = line.split(':')
+                if len(parts) >= 2:
+                    key = parts[0].strip()
+                    value = ':'.join(parts[1:]).strip()
+                    headers[key] = value
 
         # Extract the body, if present
         body: str = ''
         if '\r\n\r\n' in request.decode('utf-8'):
             body = request.decode('utf-8').split('\r\n\r\n')[1]
-        # !@#$ interesting print to show how this stuff works
-        # print(method, headers, body)
+        if "Content-Type" in headers and headers["Content-Type"] == "application/json":
+                body = json.loads(body)
         return method, path, headers, body
+
 
 
     def handle_new_client(self, client_socket: socket.socket, inputs: List[socket.socket]) -> None:

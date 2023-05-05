@@ -188,23 +188,20 @@ class Ctx:
 
         self.sock = sock
 
+
     def __getitem__(self, key: str) -> Any:
-        """
-        Get the value of a specific key.
-
-        :param key: Key name.
-        Args:
-            key (str): _description_
-        Raises:
-            KeyError: _description_
-        Returns:
-            _type_: _description_
-        """
-
         if key == "headers":
             return self.request.headers
         elif key == "body":
             return self.request.body
+        elif key == "user":
+            return self.user
+        else:
+            raise KeyError(f"Invalid key: {key}")
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        if key == "user":
+            self.user = value
         else:
             raise KeyError(f"Invalid key: {key}")
 
