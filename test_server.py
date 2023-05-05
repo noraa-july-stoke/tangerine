@@ -110,7 +110,6 @@ def get_protected_content(ctx: Ctx) -> None:
         ctx.send(401, content_type='application/json')
 
 
-
 # ==================== API ROUTES ====================
 api_router = Router(prefix='/api')
 api_router.post('/logout', lambda ctx: logout(ctx, auth))
