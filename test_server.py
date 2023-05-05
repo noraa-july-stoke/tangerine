@@ -103,7 +103,7 @@ def get_and_delete_users(ctx: Ctx, client: MongoClient) -> None:
 def get_protected_content(ctx: Ctx) -> None:
     print(ctx.auth, "ctx.auth")
     if ctx.auth and ctx.auth.get('user'):
-        ctx.body = json.dumps({"message": "This is protected content"})
+        ctx.body = json.dumps({"message": "This is protected content. Only authenticated users can see this. I hope you feel special 🍊🍊🍊."})
         ctx.send(200, content_type='application/json')
     else:
         ctx.body = json.dumps({"message": "Unauthorized"})
