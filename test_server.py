@@ -13,10 +13,11 @@ keychain = KeyLime({
     'custom_key': 'your_custom_key_value',
     "SECRET_KEY": "ILOVECATS"
 })
+
 # Initialize Yuzu with the keychain
+# Passing client into tuzu allows access to the database.
 auth = Yuzu(keychain, client)
 app.static('^/(?!api).*$', './public')
-
 
 # ==================== MIDDLEWARE ====================
 def jwt_middleware(ctx: Ctx, auth: Yuzu) -> None:
@@ -108,7 +109,6 @@ def get_protected_content(ctx: Ctx) -> None:
     else:
         ctx.body = json.dumps({"message": "Unauthorized"})
         ctx.send(401, content_type='application/json')
-
 
 # ==================== API ROUTES ====================
 api_router = Router(prefix='/api')
