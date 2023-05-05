@@ -11,35 +11,19 @@ keychain = KeyLime({
     'db_connection_string': 'your_db_connection_string',
     'google_cloud': 'your_google_cloud_key',
     'custom_key': 'your_custom_key_value',
-    "SECRET_KEY": "ILOVECATS"
+    "JWT": {
+        "SECRET_KEY": "ILOVECATS",
+        # Specified which prefixes to protect
+        "PROTECTED_PREFIXES": ["/api", "api/v1"],
+        # Allows certain entry points for logging in
+        "BYPASS_ALLOWED": ["/api/login", "/api/signup", "/api/logout"]
+        }
 })
-
 # Initialize Yuzu with the keychain
-# Passing client into tuzu allows access to the database.
+# Passing client into yuzu allows access to the database.
 auth = Yuzu(keychain, client)
+# serve static files to any request not starting with /api
 app.static('^/(?!api).*$', './public')
-
-# ==================== MIDDLEWARE ====================
-def jwt_middleware(ctx: Ctx, auth: Yuzu) -> None:
-    request_path = ctx.request.path
-    if request_path.startswith('/api') and request_path not in ['/api/login', '/api/signup']:
-        token = ctx.get_req_header("Authorization")
-        print(token,  "AUTH HEADER AUTH MIDDLE")
-
-        if not token:
-            ctx.body = json.dumps({"message": "Missing token"})
-            ctx.send(401, content_type='application/json')
-            return
-
-        decoded_token = auth.verify_auth_token(token)
-        if decoded_token:
-            ctx.auth = {
-                'user': decoded_token
-            }
-        else:
-            ctx.body = json.dumps({"message": "Invalid token"})
-            ctx.send(401, content_type='application/json')
-
 # ==================== AUTH HANDLERS ====================
 def api_hello_world(ctx: Ctx) -> None:
     ctx.body = json.dumps({"message": "Hello from API!"})
@@ -74,8 +58,8 @@ def login(ctx: Ctx, auth: Yuzu) -> None:
         ctx.send(401, content_type='application/json')
 
 
-def logout(ctx: Ctx, yuzu: Yuzu) -> None:
-    yuzu.logout()
+def logout(ctx: Ctx, auth: Yuzu) -> None:
+    auth.logout()
     ctx.body = json.dumps({"message": "Logged out successfully"})
     ctx.send(200, content_type='application/json')
 
@@ -111,6 +95,7 @@ def get_protected_content(ctx: Ctx) -> None:
         ctx.send(401, content_type='application/json')
 
 # ==================== API ROUTES ====================
+# if you need to bind more variables to your handler, you can pass in a closure
 api_router = Router(prefix='/api')
 api_router.post('/logout', lambda ctx: logout(ctx, auth))
 api_router.post('/login', lambda ctx: login(ctx, auth))
@@ -120,6 +105,6 @@ api_router.get('/users', lambda ctx: get_and_delete_users(ctx, client))
 api_router.get('/protected', get_protected_content)
 
 # app.use(auth_middleware)
-app.use(lambda ctx: jwt_middleware(ctx, auth))
+app.use(lambda ctx: auth.jwt_middleware(ctx))
 app.use_router(api_router)
 app.start()
