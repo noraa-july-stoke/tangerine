@@ -130,9 +130,10 @@ class Tangerine:
         body: str = ''
         if '\r\n\r\n' in request.decode('utf-8'):
             body = request.decode('utf-8').split('\r\n\r\n')[1]
-        if "Content-Type" in headers and headers["Content-Type"] == "application/json":
-                body = json.loads(body)
+        if "Content-Type" in headers and headers["Content-Type"] == "application/json" and body:
+            body = json.loads(body)
         return method, path, headers, body
+
 
 
 

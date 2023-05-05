@@ -1,126 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test API</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-    form {
-      margin-bottom: 1rem;
-    }
-  </style>
-</head>
-<body class="hero">
-  <h1>Welcome To Tangerine</h1>
-  <h2>Use the forms below to try out the auth features</h2>
-  <div class="form-container">
-  <form id="loginForm">
-    <h2>Login</h2>
-    <label for="loginEmail">Email:</label>
-    <input type="email" id="loginEmail" required>
-    <br>
-    <label for="loginPassword">Password:</label>
-    <input type="password" id="loginPassword" required>
-    <br>
-    <button type="submit">Login</button>
-  </form>
-  <form id="signupForm">
-    <h2>Signup</h2>
-    <label for="signupEmail">Email:</label>
-    <input type="email" id="signupEmail" required>
-    <br>
-    <label for="signupPassword">Password:</label>
-    <input type="password" id="signupPassword" required>
-    <br>
-    <button type="submit">Signup</button>
-  </form>
-  <div id="protectedContent" style="display: none;">
-    <h2>Protected Content</h2>
-    <p id="content"></p>
-  </div>
-
-  <script>
-    const loginForm = document.getElementById("loginForm");
-    const signupForm = document.getElementById("signupForm");
-    const protectedContent = document.getElementById("protectedContent");
-    const content = document.getElementById("content");
-
-    let token = null;
-
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.status === 200) {
-        const data = await response.json();
-        token = data.token;
-        alert("Login successful!");
-      } else {
-        console.log(response)
-        alert("Login failed!");
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test API</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
       }
-    });
-
-    signupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("signupEmail").value;
-      const password = document.getElementById("signupPassword").value;
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.status < 299) {
-        alert("Signup successful!");
-      } else {
-        alert("Signup failed!");
+      form {
+        margin-bottom: 1rem;
       }
-    });
+    </style>
+  </head>
+  <body class="hero">
+    <h1>Welcome To Tangerine</h1>
+    <h2>Use the forms below to try out the auth features</h2>
+    <div class="form-container">
+      <form id="loginForm">
+        <h2>Login</h2>
+        <label for="loginEmail">Email:</label>
+        <input type="email" id="loginEmail" required />
+        <br />
+        <label for="loginPassword">Password:</label>
+        <input type="password" id="loginPassword" required />
+        <br />
+        <button type="submit">Login</button>
+      </form>
+      <form id="signupForm">
+        <h2>Signup</h2>
+        <label for="signupEmail">Email:</label>
+        <input type="email" id="signupEmail" required />
+        <br />
+        <label for="signupPassword">Password:</label>
+        <input type="password" id="signupPassword" required />
+        <br />
+        <button type="submit">Signup</button>
+      </form>
+      <button id="logoutButton" type="button">Logout</button>
+      <div id="protectedContent" style="display: none">
+        <h2>Protected Content</h2>
+        <p id="content"></p>
+      </div>
 
-    async function fetchProtectedContent() {
-      if (!token) {
-        alert("Please login first!");
-        return;
-      }
+      <script>
+        const loginForm = document.getElementById("loginForm");
+        const signupForm = document.getElementById("signupForm");
+        const protectedContent = document.getElementById("protectedContent");
+        const content = document.getElementById("content");
 
-    const response = await fetch("/api/protected", {
-    headers: {
-        "Authorization": `${token}`,
-    },
-    });
+        const logoutButton = document.getElementById("logoutButton");
+        let token = null;
 
-      if (response.status === 200) {
-        const data = await response.json();
-        content.innerText = JSON.stringify(data, null, 2);
-        protectedContent.style.display= "block";
-      } else {
-        protectedContent.style.display = "none";
-        alert("Failed to fetch protected content!");
-      }
-    }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const fetchButton = document.createElement("button");
-      fetchButton.innerText = "Fetch Protected Content";
-      fetchButton.addEventListener("click", fetchProtectedContent);
-      document.body.appendChild(fetchButton);
-    });
-  </script>
-  </div>
-</body>
+        logoutButton.addEventListener("click", async () => {
+          if (!token) {
+            alert("Please login first!");
+            return;
+          }
+
+          const response = await fetch("/api/logout", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              // Authorization: `${token}`,
+            },
+          });
+
+          if (response.status === 200) {
+            token = null;
+            alert("Logout successful!");
+          } else {
+            alert("Logout failed!");
+          }
+        });
+
+
+        loginForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("loginEmail").value;
+          const password = document.getElementById("loginPassword").value;
+          const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          });
+
+          if (response.status === 200) {
+            const data = await response.json();
+            token = data.token;
+            alert("Login successful!");
+          } else {
+            console.log(response);
+            alert("Login failed!");
+          }
+        });
+
+        signupForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("signupEmail").value;
+          const password = document.getElementById("signupPassword").value;
+          const response = await fetch("/api/signup", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          });
+
+          if (response.status < 299) {
+            alert("Signup successful!");
+          } else {
+            alert("Signup failed!");
+          }
+        });
+
+        async function fetchProtectedContent() {
+          if (!token) {
+            alert("Please login first!");
+            return;
+          }
+
+          const response = await fetch("/api/protected", {
+            headers: {
+              Authorization: `${token}`,
+            },
+          });
+
+          if (response.status === 200) {
+            const data = await response.json();
+            content.innerText = JSON.stringify(data, null, 2);
+            protectedContent.style.display = "block";
+          } else {
+            protectedContent.style.display = "none";
+            alert("Failed to fetch protected content!");
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+          const fetchButton = document.createElement("button");
+          fetchButton.innerText = "Fetch Protected Content";
+          fetchButton.addEventListener("click", fetchProtectedContent);
+          document.body.appendChild(fetchButton);
+        });
+      </script>
+    </div>
+  </body>
 </html>
