@@ -19,6 +19,7 @@ keychain = KeyLime({
         "BYPASS_ALLOWED": ["/api/login", "/api/signup", "/api/logout"]
         }
 })
+
 # Initialize Yuzu with the keychain
 # Passing client into yuzu allows access to the database.
 auth = Yuzu(keychain, client)
@@ -40,10 +41,10 @@ def signup(ctx: Ctx, auth: Yuzu) -> None:
         ctx.send(500, content_type='application/json')
 
 def login(ctx: Ctx, auth: Yuzu) -> None:
-    body_dict = ctx['body']
-    email = body_dict.get('email')
-    password = body_dict.get('password')
-    print(body_dict, "body dict")
+    body = ctx['body']
+    email = body.get('email')
+    password = body.get('password')
+    print(body, "body")
 
     user_id, token = auth.login(email, password)
 
