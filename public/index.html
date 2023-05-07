@@ -53,7 +53,6 @@
         const logoutButton = document.getElementById("logoutButton");
         let token = null;
 
-
         logoutButton.addEventListener("click", async () => {
           if (!token) {
             alert("Please login first!");
@@ -75,7 +74,6 @@
             alert("Logout failed!");
           }
         });
-
 
         loginForm.addEventListener("submit", async (e) => {
           e.preventDefault();
@@ -119,10 +117,10 @@
         });
 
         async function fetchProtectedContent() {
-          if (!token) {
-            alert("Please login first!");
-            return;
-          }
+          // if (!token) {
+          //   alert("Please login first!");
+          //   return;
+          // }
 
           const response = await fetch("/api/protected", {
             headers: {
@@ -135,8 +133,10 @@
             content.innerText = JSON.stringify(data, null, 2);
             protectedContent.style.display = "block";
           } else {
-            protectedContent.style.display = "none";
-            alert("Failed to fetch protected content!");
+            const error = await response.json();
+            const errorMessage = `Error ${response.status}: ${error.message}`;
+            content.innerText = errorMessage;
+            protectedContent.style.display = "block";
           }
         }
 
