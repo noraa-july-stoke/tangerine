@@ -51,6 +51,9 @@ class Tangerine:
     def use_router(self: T, router: Router) -> None:
         self.router = router
 
+    def use(self, middleware: Callable[[Request, Response], None]) -> None:
+        self.middlewares.append(middleware)
+
     # serve static files from route pattern and folder directory specified by user
     def static(self: T, route_pattern: str, dir_path: str):
             self.static_route_pattern = route_pattern
