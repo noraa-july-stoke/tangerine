@@ -8,16 +8,23 @@ class Route:
     """Represents a single route in the application.
 
     Attributes:
-        path: A string indicating the path of the route.
-        methods: A list of HTTP methods supported by the route.
-        handler: The handler function for the route.
+        path (str): A string indicating the path of the route.
+        methods (list): A list of HTTP methods supported by the route.
+        handler (callable): The handler function for the route.
     """
 
-    def __init__(self, path, methods, handler):
+    def __init__(self, path: str, methods: list, handler: callable):
         self.path = path
         self.methods = methods
         self.handler = handler
 
-    def match(self, path):
-        """Return True if the given path matches the route's path."""
+    def match(self, path: str) -> bool:
+        """Check if the given path matches the route's path.
+        
+        Args:
+            path (str): The path to check for a match.
+
+        Returns:
+            bool: True if the given path matches the route's path, False otherwise.
+        """
         return path.startswith(self.path)
