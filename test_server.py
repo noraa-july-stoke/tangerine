@@ -5,7 +5,7 @@ from yuzu import Yuzu
 import json
 import jwt
 
-app = Tangerine('localhost', 8000, debug_level=1)
+app = Tangerine('localhost', 8000)
 client = MongoClient('mongodb://localhost:27017/')
 keychain = KeyLime({
     'db_connection_string': 'your_db_connection_string',
@@ -87,7 +87,6 @@ def get_and_delete_users(ctx: Ctx, client: MongoClient) -> None:
         ctx.send(500, content_type='application/json')
 
 def get_protected_content(ctx: Ctx) -> None:
-    print(ctx.auth, "ctx.auth")
     if ctx.auth and ctx.auth.get('user'):
         ctx.body = json.dumps({"message": "This is protected content. Only authenticated users can see this. I hope you feel special 🍊🍊🍊."})
         ctx.send(200, content_type='application/json')

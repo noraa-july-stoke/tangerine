@@ -80,7 +80,6 @@ class Tangerine:
 
         return wrapper
 
-
     def use(self, middleware: Callable[[Request, Response], None]) -> None:
         self.middlewares.append(middleware)
 
