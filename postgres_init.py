@@ -13,7 +13,7 @@ cur.execute("""
 
 # Execute a command: this creates a new table named 'users'
 cur.execute("""
-    CREATE TABLE tangerine.users (
+    CREATE TABLE IF NOT EXISTS tangerine.users (
         id SERIAL PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL
