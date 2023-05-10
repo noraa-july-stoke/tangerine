@@ -13,9 +13,10 @@ from typing import Dict, Tuple
 import json
 
 class Yuzu:
-    def __init__(self, keychain: KeyLime, client):
+    def __init__(self, keychain: KeyLime, get_user_by_email, create_user):
         self.keychain = keychain
-        self.client = client
+        self.get_user_by_email = get_user_by_email
+        self.create_user = create_user
         self.auth = False
         self.user = None
 
@@ -32,11 +33,7 @@ class Yuzu:
 
     def authenticate(self, email: str, password: str) -> bool:
         try:
-            db = self.client['mydatabase']
-            users = db['users']
-
-            query = {'email': email}
-            user = users.find_one(query)
+            user = self.get_user_by_email(email)
 
             if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
                 return True
@@ -86,13 +83,13 @@ class Yuzu:
             hashed = bcrypt.hashpw(user_data['password'].encode(), bcrypt.gensalt())
             user_data['password'] = hashed.decode()  # Convert bytes to string
 
-            db = self.client['mydatabase']
-            users = db['users']
-            result = users.insert_one(user_data)
+            created_user = self.create_user(user_data)
 
-            print(f'User created with id: {result.inserted_id}')
-            user_data['_id'] = str(result.inserted_id)  # Convert ObjectId to string
-            return user_data
+            if created_user:
+                print(f'User created with id: {created_user["_id"]}')
+                return created_user
+            else:
+                return None
 
         except Exception as e:
             print(f'Error creating user: {e}')
@@ -103,11 +100,7 @@ class Yuzu:
         print(self.authenticate(email, password))
         if self.authenticate(email, password):
             try:
-                db = self.client['mydatabase']
-                users = db['users']
-
-                query = {'email': email}
-                user_data = users.find_one(query)
+                user_data = self.get_user_by_email(email)
                 print(user_data)
 
                 if user_data:

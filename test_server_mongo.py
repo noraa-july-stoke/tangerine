@@ -13,9 +13,26 @@ keychain = KeyLime({
         "SECRET_KEY": "ILOVECATS",
 })
 
-# Initialize Yuzu with the keychain
-# Passing client into yuzu allows access to the database.
-auth = Yuzu(keychain, client)
+# Initialize Yuzu with the db funcs.
+
+def get_user_by_email(email):
+    db = client['mydatabase']
+    users = db['users']
+    query = {'email': email}
+    user = users.find_one(query)
+    if user:
+        user['_id'] = str(user['_id'])  # Convert ObjectId to string
+    return user
+
+def create_user(user_data):
+    db = client['mydatabase']
+    users = db['users']
+    result = users.insert_one(user_data)
+    if result.inserted_id:
+        user_data['_id'] = str(result.inserted_id)  # Convert ObjectId to string
+    return user_data
+
+auth = Yuzu(keychain, get_user_by_email, create_user)
 
 # serve static files to any request not starting with /api
 app.static('^/(?!api).*$', './public')
