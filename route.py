@@ -20,7 +20,7 @@ class Route:
 
     def match(self, path: str) -> bool:
         """Check if the given path matches the route's path.
-        
+
         Args:
             path (str): The path to check for a match.
 

@@ -9,6 +9,9 @@
         ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚══════╝
 🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊
 ```
+
+TANGERINE DISCORD: https://discord.gg/2VsGKfBr
+
 Thanks for checking out Tangerine! This is a new python framework that I am working on. I hope
 it will be a lot more intuitive and easier to use than flask. I am currently working on the
 architecture and basic functionality. I am hoping to have a working full version of the framework

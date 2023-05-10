@@ -14,7 +14,7 @@ from debug_helpers import generate_diff
 
 class Router:
     """The Router class handles HTTP requests and routes them to the appropriate view function.
-    
+
     Attributes:
         routes_dict (dict): A dictionary containing the routes managed by the router.
         prefix (str): A string representing the common path prefix for all routes.
@@ -27,11 +27,11 @@ class Router:
 
     def add_route(self, method: str, path: str, view_func: callable):
         """Add a new route to the router.
-        
-        Args: 
+
+        Args:
             method (str): A string representing the method.
             path (str): A string representing the path of the route.
-            view_func (callable): 
+            view_func (callable):
         """
         self.routes_dict[(method, path)] = view_func
 
@@ -46,7 +46,7 @@ class Router:
 
     def post(self, path: str, view_func: callable):
         """Add a new POST route to the router.
-        
+
         Args:
             path (str): A string representing the path of the route.
             view_func (callable): The view function to handle POST requests for this route.
@@ -55,7 +55,7 @@ class Router:
 
     def put(self, path: str, view_func: callable):
         """Add a new PUT route to the router.
-        
+
         Args:
             path (str): A string representing the path of the route.
             view_func (callable): The view function to handle PUT requests for this route.
@@ -64,7 +64,7 @@ class Router:
 
     def delete(self, path: str, view_func: callable):
         """Add a new DELETE route to the router.
-        
+
         Args:
             path (str): A string representing the path of the route.
             view_func (callable): The view function to handle DELETE requests for this route.
@@ -73,7 +73,7 @@ class Router:
 
     def route(self, path: str, view_func: callable):
         """Add a new route for all methods to the router.
-        
+
         Args:
             path (str): A string representing the path of the route.
             view_func (callable): The view function to handle requests for this route.
@@ -83,9 +83,19 @@ class Router:
         self.add_route('PUT', path, view_func)
         self.add_route('DELETE', path, view_func)
 
+    @staticmethod
+    def auth_required(handler):
+        def auth_wrapper(ctx, next=None):
+            if ctx.auth and ctx.auth.get('user'):
+                handler(ctx)
+            else:
+                ctx.body = json.dumps({"message": "Unauthorized"})
+                ctx.send(401, content_type='application/json')
+        return auth_wrapper
+
     def get_route(self, method: str, path: str):
         """Get the view function for a given method and path.
-        
+
         Args:
             method (str): A string representing the method.
             path (str): A string representing the path of the route.
@@ -104,7 +114,7 @@ class Router:
 
     def handle_route(self, method, path, ctx):
         """Handle the route given the method and path.
-        
+
         Args:
             method (str): A string representing the method.
             path (str): A string representing the path.
@@ -118,14 +128,14 @@ class Router:
 
     def set_debug_level(self, debug_level: int):
         """Set the debugging level of router.
-        
+
         Args:
             debug_level (int): A integer representing the debugging level.
         """
         self.debug_level = debug_level
 
     def debugger(self, middleware: Callable[[Ctx], None]) -> Callable[[Ctx], None]:
-        """Wrap a middleware function with debugging information. 
+        """Wrap a middleware function with debugging information.
 
         Args:
             middleware (Callable[[Ctx], None]): The middleware function to wrap with debugging information.
@@ -165,12 +175,12 @@ class Router:
 
     def routes (self):
         """Get all the routes in the router and collect them into a list and then return it.
-        
+
         Args:
             None
 
-        Returns: 
-            routes (list): A List is returned containing the routes on the Router.     
+        Returns:
+            routes (list): A List is returned containing the routes on the Router.
         """
         routes: List[Tuple[str, str]] = []
         for route, view_func in self.routes_dict.items():
@@ -180,9 +190,9 @@ class Router:
 
     def send(self, status_code: int, body: str = None):
         """Create the response from the router.
-        
+
         Args:
-            status_code (int): An int that represents 
+            status_code (int): An int that represents
             body (str, optional): A string that represents the body of the response.
 
         Returns:

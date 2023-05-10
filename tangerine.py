@@ -26,6 +26,7 @@ from print_messages import print_success
 from debug_helpers import generate_diff
 from yuzu import Yuzu
 from key_lime import KeyLime
+from middleware import Middleware, MiddlewareResponse
 # from tangerine import Request, Response, Ctx, PrintMessage, Route, Router, TangerineError
 
 T = TypeVar("T")
@@ -37,7 +38,7 @@ class Tangerine:
         self.port: int = port
         self.routes: Dict[str,
                           Dict[str, Callable[[Request, Response], None]]] = {}
-        self.middlewares: List[Callable[[Ctx], None]] = []
+        self.middlewares = Middleware()
         self._create_socket()
         self.static_route_pattern = None
         # Add this line to define the regex instance variable
@@ -81,7 +82,7 @@ class Tangerine:
         return wrapper
 
     def use(self, middleware: Callable[[Request, Response], None]) -> None:
-        self.middlewares.append(middleware)
+        self.middlewares.use(middleware)  # Update the use method to call middlewares.use
 
     def _create_socket(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -109,8 +110,9 @@ class Tangerine:
 
 
     def parse_request(self, request: bytes) -> Tuple[str, str, Dict[str, str], Union[str, bytes]]:
-        # Split the request into its individual lines
-        lines = request.decode('utf-8').split('\r\n')
+        # Decode the request and split it into its individual lines
+        decoded_request = request.decode('utf-8')
+        lines = decoded_request.split('\r\n')
 
         # Extract the method and path from the first line
         method, path, _ = lines[0].split(' ')
@@ -127,14 +129,16 @@ class Tangerine:
 
         # Extract the body, if present
         body: str = ''
-        if '\r\n\r\n' in request.decode('utf-8'):
-            body = request.decode('utf-8').split('\r\n\r\n')[1]
+        if '\r\n\r\n' in decoded_request:
+            body = decoded_request.split('\r\n\r\n')[1]
         if "Content-Type" in headers and headers["Content-Type"] == "application/json" and body:
-            body = json.loads(body)
+            try:
+                body = json.loads(body)
+            except json.JSONDecodeError:
+                pass
+        print("Headers:", headers)
+        print("Body:", body)
         return method, path, headers, body
-
-
-
 
     def handle_new_client(self, client_socket: socket.socket, inputs: List[socket.socket]) -> None:
         inputs.append(client_socket)
@@ -155,11 +159,7 @@ class Tangerine:
 
             ctx = Ctx(req, res)
             ctx.set_socket(sock)  # Set the socket for the context
-            for middleware in self.middlewares:
-                wrapped_middleware = middleware
-                if self.debug_level:
-                    wrapped_middleware = self.debugger(middleware)
-                wrapped_middleware(ctx)
+            self.middlewares.execute(ctx)
 
             # Check if the requested path matches any of the static routes using a regular expression
             if self.static_route_pattern_re and self.static_route_pattern_re.match(path):

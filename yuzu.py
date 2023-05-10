@@ -12,7 +12,6 @@ import jwt
 from typing import Dict, Tuple
 import json
 
-
 class Yuzu:
     def __init__(self, keychain: KeyLime, client):
         self.keychain = keychain
@@ -49,7 +48,7 @@ class Yuzu:
             return False
 
     def generate_auth_token(self, user_id: str, email: str) -> str:
-        secret_key = self.get_config('JWT')["SECRET_KEY"]
+        secret_key = self.get_config("SECRET_KEY")
         print("GENERATE AUTH TOKEN VARIABLES", user_id, email, secret_key)
         token_payload = {
             "user_id": user_id,
@@ -58,9 +57,10 @@ class Yuzu:
         }
         return jwt.encode(token_payload, secret_key, algorithm='HS256')
 
+
     def verify_auth_token(self, token: str) -> dict:
         try:
-            secret_key = self.get_config('JWT')["SECRET_KEY"]
+            secret_key = self.get_config('SECRET_KEY')
             decoded_token = jwt.decode(token, secret_key, algorithms=['HS256'])
             return decoded_token
         except jwt.ExpiredSignatureError:
@@ -70,36 +70,18 @@ class Yuzu:
             print("Invalid token")
             return None
 
-    def jwt_middleware(self, ctx) -> None:
-        jwt_config = self.get_config("JWT")
-        protected_prefixes = jwt_config["PROTECTED_PREFIXES"]
-        bypass_allowed = jwt_config["BYPASS_ALLOWED"]
-
-        request_path = ctx.request.path
-        if any(request_path.startswith(prefix) for prefix in protected_prefixes) and request_path not in bypass_allowed:
-            token = ctx.get_req_header("Authorization")
-            print(token, "AUTH HEADER AUTH MIDDLE")
-
-            if not token:
-                ctx.body = json.dumps({"message": "Missing token"})
-                ctx.send(401, content_type='application/json')
-                return
-
-            decoded_token = self.verify_auth_token(token)
-            if decoded_token:
-                ctx.auth = {
-                    'user': decoded_token
-                }
-            else:
-                ctx.body = json.dumps({"message": "Invalid token"})
-                ctx.send(401, content_type='application/json')
+    def jwt_middleware(self, ctx, next) -> None:
+        # Extract the token from the request headers or cookies
+        token = ctx.get_req_header("Authorization")
+        user = None
+        # Verify the token and get the user
+        if token:
+            user = self.verify_auth_token(token)
+            ctx.auth = {"user": user}
+            next()  # Call next() only if the user is authenticated
 
 
-
-
-
-
-    def sign_up(self,user_data: dict) -> dict:
+    def sign_up(self, user_data: dict) -> dict:
         try:
             hashed = bcrypt.hashpw(user_data['password'].encode(), bcrypt.gensalt())
             user_data['password'] = hashed.decode()  # Convert bytes to string
@@ -115,7 +97,6 @@ class Yuzu:
         except Exception as e:
             print(f'Error creating user: {e}')
             return None
-
 
 
     def login(self, email: str, password: str) -> Tuple[str, str]:
@@ -134,7 +115,6 @@ class Yuzu:
                     self.user = user_data
                     print(self.user, "SELF.USER")
                     token = self.generate_auth_token(str(user_data["_id"]), email)
-                    print(token, "TOKEN!!!!!!!!!!!!!")
                     return str(user_data["_id"]), token
                 else:
                     return None, None
@@ -144,6 +124,7 @@ class Yuzu:
                 return None, None
         else:
             return None, None
+
 
     def logout(self):
         self.auth = False
