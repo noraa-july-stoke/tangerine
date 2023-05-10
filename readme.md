@@ -57,9 +57,10 @@ Bergamot, Buddha's Hand, and Key Limes.
 ```
 # So far, this is what you can do with tangerine...
 ## This code boots up a tangerine instance with an api router and some middlewares and authentication setup.
-I am still looking to clean this up a bit, but this is the general idea of how I want to set up the framework.
-```
 
+### Example setup for mongodb:
+
+```python
 from tangerine import Tangerine, Ctx, Router
 from pymongo import MongoClient
 from key_lime import KeyLime
@@ -67,48 +68,50 @@ from yuzu import Yuzu
 import json
 import jwt
 
-app = Tangerine('localhost', 8000, debug_level=1)
+app = Tangerine()
+
 client = MongoClient('mongodb://localhost:27017/')
+
 keychain = KeyLime({
-    'db_connection_string': 'your_db_connection_string',
-    'google_cloud': 'your_google_cloud_key',
-    'custom_key': 'your_custom_key_value',
-    "SECRET_KEY": "ILOVECATS"
+        "SECRET_KEY": "ILOVECATS",
 })
-# Initialize Yuzu with the keychain
-auth = Yuzu(keychain, client)
+
+# Initialize Yuzu with the db funcs.
+
+def get_user_by_email(email):
+    db = client['mydatabase']
+    users = db['users']
+    query = {'email': email}
+    user = users.find_one(query)
+    if user:
+        user['_id'] = str(user['_id'])  # Convert ObjectId to string
+    return user
+
+def create_user(user_data):
+    db = client['mydatabase']
+    users = db['users']
+    result = users.insert_one(user_data)
+    if result.inserted_id:
+        user_data['_id'] = str(result.inserted_id)  # Convert ObjectId to string
+    return user_data
+
+auth = Yuzu(keychain, get_user_by_email, create_user)
+
+# serve static files to any request not starting with /api
 app.static('^/(?!api).*$', './public')
 
-
-# ==================== MIDDLEWARE ====================
-def jwt_middleware(ctx: Ctx, auth: Yuzu) -> None:
-    request_path = ctx.request.path
-    if request_path.startswith('/api') and request_path not in ['/api/login', '/api/signup']:
-        token = ctx.get_req_header("Authorization")
-        print(token,  "AUTH HEADER AUTH MIDDLE")
-
-        if not token:
-            ctx.body = json.dumps({"message": "Missing token"})
-            ctx.send(401, content_type='application/json')
-            return
-
-        decoded_token = auth.verify_auth_token(token)
-        if decoded_token:
-            ctx.auth = {
-                'user': decoded_token
-            }
-        else:
-            ctx.body = json.dumps({"message": "Invalid token"})
-            ctx.send(401, content_type='application/json')
-
+# This is how you define a custom middleware.
+def hello_middle(ctx: Ctx, next) -> None:
+    print("Hello from middleware!")
+    ctx.hello_message = json.dumps({"message": "Hello from middleware!"})
+    next()
 # ==================== AUTH HANDLERS ====================
 def api_hello_world(ctx: Ctx) -> None:
-    ctx.body = json.dumps({"message": "Hello from API!"})
+    ctx.body = ctx.hello_message
     ctx.send(200, content_type='application/json')
 
-def signup(ctx: Ctx, auth: Yuzu) -> None:
-    user_data = ctx['body']
-
+def signup(ctx: Ctx) -> None:
+    user_data = ctx.request.body
     created_user = auth.sign_up(user_data)
     if created_user:
         ctx.body = json.dumps(created_user)
@@ -116,80 +119,162 @@ def signup(ctx: Ctx, auth: Yuzu) -> None:
     else:
         ctx.send(500, content_type='application/json')
 
-def login(ctx: Ctx, auth: Yuzu) -> None:
-    body_dict = ctx['body']
-    email = body_dict.get('email')
-    password = body_dict.get('password')
-    print(body_dict, "body dict")
-
+def login(ctx: Ctx) -> None:
+    user_data = ctx.request.body
+    email = user_data['email']
+    password = user_data['password']
     user_id, token = auth.login(email, password)
 
     if token:
-        ctx.auth = auth
         ctx.body = json.dumps({"message": "Logged in successfully", "token": token})
+        ctx.set_res_header("Set-Cookie", f"auth_token={token}; HttpOnly; Path=/")
         ctx.send(200, content_type='application/json')
         # Set the token as a cookie or in the response headers
-        ctx.set_res_header("Set-Cookie", f"auth_token={token}; HttpOnly; Path=/")
     else:
         ctx.body = json.dumps({"message": "Invalid credentials"})
         ctx.send(401, content_type='application/json')
 
-
-def logout(ctx: Ctx, yuzu: Yuzu) -> None:
-    yuzu.logout()
+def logout(ctx: Ctx) -> None:
+    auth.logout()
     ctx.body = json.dumps({"message": "Logged out successfully"})
     ctx.send(200, content_type='application/json')
 
-def get_and_delete_users(ctx: Ctx, client: MongoClient) -> None:
-    try:
-        # Get all users
-        db = client['mydatabase']
-        users = db['users']
-        all_users = list(users.find())
-
-        # Print all users to console
-        for user in all_users:
-            print(user)
-
-        # Delete all users
-        result = users.delete_many({})
-        print(f'{result.deleted_count} users deleted')
-
-        ctx.body = json.dumps({'message': 'All users deleted'})
-        ctx.send(200, content_type='application/json')
-
-    except Exception as e:
-        print(f'Error getting and deleting users: {e}')
-        ctx.send(500, content_type='application/json')
-
+@Router.auth_required
 def get_protected_content(ctx: Ctx) -> None:
-    print(ctx.auth, "ctx.auth")
-    if ctx.auth and ctx.auth.get('user'):
-        ctx.body = json.dumps({"message": "This is protected content"})
-        ctx.send(200, content_type='application/json')
-    else:
-        ctx.body = json.dumps({"message": "Unauthorized"})
-        ctx.send(401, content_type='application/json')
-
+    ctx.body = json.dumps({"message": "This is protected content. Only authenticated users can see this. I hope you feel special 🍊🍊🍊."})
+    ctx.send(200, content_type='application/json')
 
 # ==================== API ROUTES ====================
+# if you need to bind more variables to your handler, you can pass in a closure
 api_router = Router(prefix='/api')
-api_router.post('/logout', lambda ctx: logout(ctx, auth))
-api_router.post('/login', lambda ctx: login(ctx, auth))
-api_router.post('/signup', lambda ctx: signup(ctx, auth))
+api_router.post('/logout', logout)
+api_router.post('/login', login)
+api_router.post('/signup', signup)
 api_router.get('/hello', api_hello_world)
-api_router.get('/users', lambda ctx: get_and_delete_users(ctx, client))
+# api_router.get('/users', get_and_delete_users)
 api_router.get('/protected', get_protected_content)
 
-# app.use(auth_middleware)
-app.use(lambda ctx: jwt_middleware(ctx, auth))
+app.use(hello_middle)
+app.use(auth.jwt_middleware)
 app.use_router(api_router)
 app.start()
 
-
-
-
 ```
+
+### example setup for postgres:
+
+```python
+from tangerine import Tangerine, Ctx, Router
+from key_lime import KeyLime
+from yuzu import Yuzu
+import json
+import jwt
+import psycopg2
+
+# ==================== If you don't have schema and tables this part will set that up for you  ====================
+conn = psycopg2.connect("postgresql://postgres:C4melz!!@localhost:5432/local_development")
+
+# Open a cursor to perform database operations
+cur = conn.cursor()
+
+# Create schema if it's not there
+cur.execute("""
+    CREATE SCHEMA IF NOT EXISTS tangerine;
+""")
+
+# Execute a command: this creates a new table named 'users'
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS tangerine.users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL
+    )
+""")
+# Commit the transaction
+conn.commit()
+# Close the connection
+cur.close()
+conn.close()
+
+# =================================================================================================================
+
+app = Tangerine()
+keychain = KeyLime({
+        "SECRET_KEY": "ILOVECATS",
+})
+
+
+def get_user_by_email(email):
+    conn = psycopg2.connect("postgresql://postgres:C4melz!!@localhost:5432/local_development")
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM tangerine.users WHERE email = %s", (email,))
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    if user:
+        return {'_id': user[0], 'email': user[1], 'password': user[2]}
+    else:
+        return None
+
+def create_user(user_data):
+    conn = psycopg2.connect("postgresql://postgres:C4melz!!@localhost:5432/local_development")
+    cur = conn.cursor()
+    cur.execute("INSERT INTO tangerine.users (email, password) VALUES (%s, %s) RETURNING id", (user_data['email'], user_data['password']))
+    user_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+    conn.close()
+    return {'_id': user_id, 'email': user_data['email'], 'password': user_data['password']}
+
+auth = Yuzu(keychain, get_user_by_email, create_user)
+# serve static files to any request not starting with /api
+app.static('^/(?!api).*$', './public')
+
+def signup(ctx: Ctx) -> None:
+    user_data = ctx.request.body
+    created_user = auth.sign_up(user_data)
+    if created_user:
+        ctx.body = json.dumps(created_user)
+        ctx.send(201, content_type='application/json')
+    else:
+        ctx.send(500, content_type='application/json')
+
+def login(ctx: Ctx) -> None:
+    user_data = ctx.request.body
+    email = user_data['email']
+    password = user_data['password']
+    user_id, token = auth.login(email, password)
+
+    if token:
+        ctx.body = json.dumps({"message": "Logged in successfully", "token": token})
+        ctx.set_res_header("Set-Cookie", f"auth_token={token}; HttpOnly; Path=/")
+        ctx.send(200, content_type='application/json')
+    else:
+        ctx.body = json.dumps({"message": "Invalid credentials"})
+        ctx.send(401, content_type='application/json')
+
+def logout(ctx: Ctx) -> None:
+    auth.logout()
+    ctx.body = json.dumps({"message": "Logged out successfully"})
+    ctx.send(200, content_type='application/json')
+
+@Router.auth_required
+def get_protected_content(ctx: Ctx) -> None:
+    ctx.body = json.dumps({"message": "This is protected content. Only authenticated users can see this. I hope you feel special 🍊🍊🍊."})
+    ctx.send(200, content_type='application/json')
+
+# ==================== API ROUTES ====================
+api_router = Router(prefix='/api')
+api_router.post('/logout', logout)
+api_router.post('/login', login)
+api_router.post('/signup', signup)
+api_router.get('/protected', get_protected_content)
+
+app.use(auth.jwt_middleware)
+app.use_router(api_router)
+app.start()
+
 
 ## More Details TBD
 
