@@ -14,24 +14,62 @@ import json
 
 
 class Yuzu:
+    """
+    This class is responsible for handling user authentication, such as
+    logging in, logging out, signing up, and generating/verifying tokens.
+
+    Attributes:
+    keychain (KeyLime): An instance of KeyLime class, used for retrieving keys.
+    client: Database client used for user authentication.
+    auth (bool): Authentication status of the user.
+    user: Data of the authenticated user.
+    """
     def __init__(self, keychain: KeyLime, client):
+        """
+        Parameters:
+        keychain (KeyLime): An instance of KeyLime class, used for retrieving keys.
+        client: Database client used for user authentication.
+        """
         self.keychain = keychain
         self.client = client
         self.auth = False
         self.user = None
 
     def get_config(self, key_name: str) -> str:
+        """
+        Returns the value of the specified key from the keychain.
+
+        Parameters:
+        key_name (str): The name of the key.
+
+        Returns:
+        str: The value of the key.
+        """
         return self.keychain.get_key(key_name)
 
     def setup_database(self):
-        # Set up the database using self.db_connection_string
+        """
+        Sets up the database using the database connection string.
+        """
         pass
 
     def setup_other_configs(self):
-        # Set up other configurations using self.google_cloud or other configs from the keychain
+        """
+        Sets up other configurations using the Google Cloud or other configs from the keychain.
+        """
         pass
 
     def authenticate(self, email: str, password: str) -> bool:
+        """
+        Authenticates a user with the provided email and password.
+
+        Parameters:
+        email (str): The user's email.
+        password (str): The user's password.
+
+        Returns:
+        bool: True if the user is authenticated, False otherwise.
+        """
         try:
             db = self.client['mydatabase']
             users = db['users']
@@ -49,6 +87,16 @@ class Yuzu:
             return False
 
     def generate_auth_token(self, user_id: str, email: str) -> str:
+        """
+        Generates an authentication token for a user.
+
+        Parameters:
+        user_id (str): The user's ID.
+        email (str): The user's email.
+
+        Returns:
+        str: The authentication token.
+        """
         secret_key = self.get_config('JWT')["SECRET_KEY"]
         print("GENERATE AUTH TOKEN VARIABLES", user_id, email, secret_key)
         token_payload = {
@@ -59,6 +107,15 @@ class Yuzu:
         return jwt.encode(token_payload, secret_key, algorithm='HS256')
 
     def verify_auth_token(self, token: str) -> dict:
+        """
+        Verifies an authentication token.
+
+        Parameters:
+        token (str): The authentication token.
+
+        Returns:
+        dict: The decoded token if it's valid and not expired, None otherwise.
+        """
         try:
             secret_key = self.get_config('JWT')["SECRET_KEY"]
             decoded_token = jwt.decode(token, secret_key, algorithms=['HS256'])
@@ -71,6 +128,12 @@ class Yuzu:
             return None
 
     def jwt_middleware(self, ctx) -> None:
+        """
+        Middleware to handle JWT authentication.
+
+        Parameters:
+        ctx: The context for the request and response.
+        """
         jwt_config = self.get_config("JWT")
         protected_prefixes = jwt_config["PROTECTED_PREFIXES"]
         bypass_allowed = jwt_config["BYPASS_ALLOWED"]
@@ -94,12 +157,16 @@ class Yuzu:
                 ctx.body = json.dumps({"message": "Invalid token"})
                 ctx.send(401, content_type='application/json')
 
-
-
-
-
-
     def sign_up(self,user_data: dict) -> dict:
+        """
+        Signs up a new user.
+
+        Parameters:
+        user_data (dict): The user's data.
+
+        Returns:
+        dict: The created user's data, None if an error occurred.
+        """
         try:
             hashed = bcrypt.hashpw(user_data['password'].encode(), bcrypt.gensalt())
             user_data['password'] = hashed.decode()  # Convert bytes to string
@@ -119,6 +186,16 @@ class Yuzu:
 
 
     def login(self, email: str, password: str) -> Tuple[str, str]:
+        """
+        Logs in a user with the provided email and password.
+
+        Parameters:
+        email (str): The user's email.
+        password (str): The user's password.
+
+        Returns:
+        Tuple[str, str]: The user's ID and authentication token, (None, None) if an error occurred or the authentication failed.
+        """
         print(self.authenticate(email, password))
         if self.authenticate(email, password):
             try:
@@ -146,5 +223,8 @@ class Yuzu:
             return None, None
 
     def logout(self):
+        """
+        Logs out the current user.
+        """
         self.auth = False
         self.user = None
