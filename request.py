@@ -34,7 +34,14 @@ class Request:
 
     @classmethod
     def from_bytes(cls, data):
-        """Parse a byte string into a Request object."""
+        """Parse a byte string into a Request object.
+
+        Args:
+            data (str): The data to be parsed.
+
+        Returns:
+            Request: A request object with the parsed data as parameters.
+        """
         # split the request into lines
         lines = data.decode().split('\r\n')
 
@@ -59,10 +66,10 @@ class Request:
 
     def to_dict(self) -> dict:
         """
-        Creates dictionary representation of the Response Class
+        Creates dictionary representation of the Response Class.
 
         Returns:
-            dict: _description_
+            dict: A dictionary of the Response class.
         """
         return {
             'method': self.method,

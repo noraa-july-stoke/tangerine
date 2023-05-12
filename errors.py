@@ -8,10 +8,21 @@
 
 class TangerineError(Exception):
     def __init__(self, message, status_code):
+        """The error class handler.
+
+        Args:
+            message (str): The message of the error.
+            status_code (int): A interger that represents the status code.
+        """
         super().__init__(message)
         self.status_code = status_code
 
     def to_dict(self):
+        """Creates a dictionary of the error.
+
+        Returns:
+            dict{'error': {'message','status_code'}}: A dictionary of the error.
+        """
         return {
             'error': {
                 'message': str(self),

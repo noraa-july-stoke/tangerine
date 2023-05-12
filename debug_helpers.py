@@ -2,7 +2,6 @@ from typing import Dict, Any
 from tangerine import Ctx
 import json
 
-
 # def generate_diff(old_state: Dict, new_state: Dict) -> str:
 #     diff = {}
 #     for key in new_state:
@@ -51,12 +50,17 @@ import json
 #     ctx_copy.pop('socket', None)
 #     return ctx_copy
 
-
-from typing import Dict, Any
-from tangerine import Ctx
-import json
-
 def compare_nested_objects(old: Any, new: Any) -> bool:
+    """
+    Compares two nested objects to check if they are the same. The function recursively iterates over elements if the objects are list or dict.
+
+    Args:
+        old (Any): The first object to compare.
+        new (Any): The second object to compare.
+
+    Returns:
+        bool: True if objects are the same, False otherwise.
+    """
     if type(old) != type(new):
         return False
 
@@ -86,6 +90,18 @@ def compare_nested_objects(old: Any, new: Any) -> bool:
 #     return json.dumps(diff, indent=2, default=str)
 
 def generate_diff(old_state: Dict, new_state: Dict) -> str:
+    """
+    Generates a difference between two dictionaries. The function checks for changes in the dictionary values and 
+    stores the differences in two separate dictionaries for old and new states. The function can handle nested dictionaries.
+
+    Args:
+        old_state (Dict): The old state dictionary.
+        new_state (Dict): The new state dictionary.
+
+    Returns:
+        str: A JSON string representing the differences between old and new states. The JSON object has two keys 'old' and 'new' 
+        containing the differences in old and new states respectively.
+    """
     old_diff = {}
     new_diff = {}
 

@@ -175,7 +175,7 @@ import jwt
 import psycopg2
 
 # ==================== If you don't have schema and tables this part will set that up for you  ====================
-conn = psycopg2.connect("postgresql://postgres:C4melz!!@localhost:5432/local_development")
+conn = psycopg2.connect("postgresql://postgres:<POSTGRESPASSWORD>@localhost:5432/local_development")
 
 # Open a cursor to perform database operations
 cur = conn.cursor()
@@ -208,7 +208,7 @@ keychain = KeyLime({
 
 
 def get_user_by_email(email):
-    conn = psycopg2.connect("postgresql://postgres:C4melz!!@localhost:5432/local_development")
+    conn = psycopg2.connect("postgresql://postgres:<POSTGRESPASSWORD>@localhost:5432/local_development")
     cur = conn.cursor()
     cur.execute("SELECT * FROM tangerine.users WHERE email = %s", (email,))
     user = cur.fetchone()
@@ -221,7 +221,7 @@ def get_user_by_email(email):
         return None
 
 def create_user(user_data):
-    conn = psycopg2.connect("postgresql://postgres:C4melz!!@localhost:5432/local_development")
+    conn = psycopg2.connect("postgresql://postgres:<POSTGRESPASSWORD>@localhost:5432/local_development")
     cur = conn.cursor()
     cur.execute("INSERT INTO tangerine.users (email, password) VALUES (%s, %s) RETURNING id", (user_data['email'], user_data['password']))
     user_id = cur.fetchone()[0]

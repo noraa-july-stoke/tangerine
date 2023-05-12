@@ -21,7 +21,30 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 class Tangerine:
+    """
+    The Tangerine class is a lightweight server configuration tool. It allows the setup and maintenance of a server 
+    on a given host and port. It has capabilities for handling HTTP requests and responses, route management, 
+    middleware processing, and socket creation.
+
+    Attributes:
+        host (str): The IP address or hostname where the server will be hosted.
+        port (int): The port number where the server will be listening.
+        routes (dict): A dictionary to manage routes. The keys are route URLs and the values are dictionaries with 
+        HTTP methods (as keys) and their associated handler functions (as values).
+        middlewares (list): A list of middleware functions to be executed before the route handlers.
+        static_route_pattern: Placeholder for static route patterns.
+        static_route_pattern_re: Placeholder for compiled regex patterns of static routes.
+    """
+
     def __init__(self: T, host: str = 'localhost', port: int = 8000) -> None:
+        """
+        Initializes a Tangerine instance with the specified host and port.
+
+        Args:
+            self (T): The instance of the Tangerine class.
+            host (str, optional): The IP address or hostname where the server will be hosted. Defaults to 'localhost'.
+            port (int, optional): The port number where the server will be listening. Defaults to 8000.
+        """
         self.host: str = host
         self.port: int = port
         self.routes: Dict[str,
@@ -37,6 +60,9 @@ class Tangerine:
     # def
 
     def _create_socket(self):
+        """
+        Creates a socket object. This method is typically called during the initialization of the Tangerine instance.
+        """
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(
             socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -44,26 +70,63 @@ class Tangerine:
         self.server_socket.listen()
 
     def register_route(self, method, path, handler):
+        """
+        Registers a route and its handler function in the routes dictionary.
+
+        Args:
+            method (str): The HTTP method of the route.
+            path (str): The URL path of the route.
+            handler (Callable): The function that handles the route.
+        """
         if method not in self.routes:
             self.routes[method] = {}
         self.routes[method][path] = handler
 
     def use_router(self: T, router: Router) -> None:
+        """
+        Attaches a router to the Tangerine instance.
+
+        Args:
+            router (Router): The router to be used.
+        """
+
         self.router = router
 
     def use(self, middleware: Callable[[Request, Response], None]) -> None:
+        """
+        Adds a middleware function to the middlewares list.
+
+        Args:
+            middleware (Callable): The middleware function to be added.
+        """
         self.middlewares.append(middleware)
 
     # serve static files from route pattern and folder directory specified by user
     def static(self: T, route_pattern: str, dir_path: str):
-            self.static_route_pattern = route_pattern
-            self.static_dir_path = dir_path
-            # Use regular expressions to match the requested path against the static route pattern
-            pattern = '^{}(/.*)?$'.format(self.static_route_pattern.rstrip('/'))
-            self.static_route_pattern_re = re.compile(pattern)
-            print("STATIC ROUTE PATTERN", self.static_route_pattern, self.static_route_pattern_re, self.static_dir_path)
+        """
+        Configures the Tangerine instance to serve static files from a directory.
+
+        Args:
+            route_pattern (str): The URL pattern that matches static file routes.
+            dir_path (str): The directory from where the static files will be served.
+        """
+        self.static_route_pattern = route_pattern
+        self.static_dir_path = dir_path
+        # Use regular expressions to match the requested path against the static route pattern
+        pattern = '^{}(/.*)?$'.format(self.static_route_pattern.rstrip('/'))
+        self.static_route_pattern_re = re.compile(pattern)
+        print("STATIC ROUTE PATTERN", self.static_route_pattern, self.static_route_pattern_re, self.static_dir_path)
 
     def parse_request(self, request: bytes) -> Tuple[str, str, Dict[str, str], Union[str, bytes]]:
+        """
+        Parses an HTTP request into its components.
+
+        Args:
+            request (bytes): The HTTP request to be parsed.
+
+        Returns:
+            Tuple[str, str, Dict[str, str], Union[str, bytes]]: A tuple containing the HTTP method, path, headers, and body of the request.
+        """
         # Split the request into its individual lines
         lines = request.decode('utf-8').split('\r\n')
 
@@ -85,6 +148,13 @@ class Tangerine:
         return method, path, headers, body
 
     async def handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+        """
+        Asynchronously handles a client connection.
+
+        Args:
+            reader (asyncio.StreamReader): The reader object for the client connection.
+            writer (asyncio.StreamWriter): The writer object for the client connection.
+        """
         request = await reader.read(4096)
 
         if request:
@@ -124,6 +194,12 @@ class Tangerine:
             await writer.wait_closed()
 
     async def run(self) -> None:
+        """
+        Starts the server and begins listening for connections asynchronously.
+
+        This method sets up the server to listen for connections, logs the server startup information, and then 
+        enters a loop where it continuously serves incoming connections until an interrupt is received.
+        """
         server = await asyncio.start_server(self.handle_client, self.host, self.port)
 
         logging.info(f' 🍊 Server sprouted @ {self.host}:{self.port}... 🌱🌱🌱')
@@ -133,6 +209,11 @@ class Tangerine:
             await server.serve_forever()
 
     def start(self: T) -> None:
+        """
+        Starts the event loop. 
+
+        This method is the entry point for starting the server. It runs the event loop until the server is stopped.
+        """
         try:
             asyncio.run(self.run())
         except KeyboardInterrupt:
