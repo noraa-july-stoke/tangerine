@@ -14,7 +14,6 @@ keychain = KeyLime({
 })
 
 # Initialize Yuzu with the db funcs.
-
 def get_user_by_email(email):
     db = client['mydatabase']
     users = db['users']
@@ -23,6 +22,7 @@ def get_user_by_email(email):
     if user:
         user['_id'] = str(user['_id'])  # Convert ObjectId to string
     return user
+
 
 def create_user(user_data):
     db = client['mydatabase']

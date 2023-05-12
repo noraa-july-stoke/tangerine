@@ -105,6 +105,7 @@ def hello_middle(ctx: Ctx, next) -> None:
     print("Hello from middleware!")
     ctx.hello_message = json.dumps({"message": "Hello from middleware!"})
     next()
+
 # ==================== AUTH HANDLERS ====================
 def api_hello_world(ctx: Ctx) -> None:
     ctx.body = ctx.hello_message
@@ -144,8 +145,10 @@ def get_protected_content(ctx: Ctx) -> None:
     ctx.body = json.dumps({"message": "This is protected content. Only authenticated users can see this. I hope you feel special 🍊🍊🍊."})
     ctx.send(200, content_type='application/json')
 
+
 # ==================== API ROUTES ====================
 # if you need to bind more variables to your handler, you can pass in a closure
+
 api_router = Router(prefix='/api')
 api_router.post('/logout', logout)
 api_router.post('/login', login)
