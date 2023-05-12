@@ -9,6 +9,7 @@ click = "*"
 pytest-trio = "*"
 web3 = "*"
 requests = "*"
+psycopg2 = "*"
 
 [dev-packages]
 
