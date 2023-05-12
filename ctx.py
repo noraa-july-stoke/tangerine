@@ -13,6 +13,7 @@ from request import Request
 from response import Response
 from key_lime import KeyLime
 from yuzu import Yuzu
+import json
 T = TypeVar("T")
 
 
@@ -173,8 +174,9 @@ class Ctx:
 
         :param value: New response body.
         """
-
-        if isinstance(value, str):
+        if isinstance(value, dict):
+            self.response.body = json.dumps(value).encode()
+        elif isinstance(value, str):
             self.response.body = value.encode()
         else:
             self.response.body = value
