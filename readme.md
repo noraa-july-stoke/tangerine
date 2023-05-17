@@ -1,4 +1,3 @@
-
 ```text
 🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊
      ████████╗ █████╗ ███╗   ██╗ ██████╗ ███████╗██████╗ ██╗███╗   ██╗███████╗
@@ -12,16 +11,15 @@
 
 TANGERINE DISCORD: https://discord.gg/2VsGKfBr
 
-Thanks for checking out Tangerine! This is a new python framework that I am working on. I hope
-it will be a lot more intuitive and easier to use than flask. I am currently working on the
+Thanks for checking out Tangerine! This is a new Python framework that I am working on. I hope
+it will be a lot more intuitive and easier to use than Flask. I am currently working on the
 architecture and basic functionality. I am hoping to have a working full version of the framework
 up and running some time soon.
 
-
 I am also working on a CLI tool for database migrations.
-I aim to make the newframework with better route creation syntax thank flask and
+I aim to make the new framework with better route creation syntax than Flask and
 am hoping to tackle some problems such as running database migrations in a better fashion (because
-ewwww migrations in python frameworks.... javascript frameworks currently handle this so much better).
+ewwww migrations in Python frameworks.... JavaScript frameworks currently handle this so much better).
 
 This is brand new, so still making skeletons/experimenting with the basic architecture and modules that I want to use.
 I am working out some kinks in the Tangerine class before I fixup Request, Response,and Ctx and then start to add in
@@ -29,6 +27,7 @@ more functionality. Current setup work is under branch architecture-setup. There
 Bergamot, Buddha's Hand, and Key Limes.
 
 # Commit message keys:
+
 ```
 
 # anything provided after <relevant comment>: is optional but highly encouraged for tracing.
@@ -55,7 +54,9 @@ Bergamot, Buddha's Hand, and Key Limes.
 🔀 - <branch name>: <feature filepath>: <relevant comment>
 
 ```
+
 # So far, this is what you can do with tangerine...
+
 ## This code boots up a tangerine instance with an api router and some middlewares and authentication setup.
 
 ### Example setup for mongodb:
@@ -283,3 +284,4 @@ app.start()
 
 
 ## This readme is a work in progress so keep an eye out for more documentation/outlines of the project.
+```
