@@ -7,14 +7,11 @@
 # headers, and body.
 
 from typing import Dict
-from response import Response
 import socket
 import json
 
 from typing import Dict
-from response import Response
-import socket
-import json
+
 
 class Request:
     """Represents an HTTP request.
@@ -26,14 +23,14 @@ class Request:
         body: A string containing the HTTP request body.
     """
 
-    def __init__(self, method, path, headers, body):
+    def __init__(self, method: str, path: str, headers: str, body: str) -> None:
         self.method = method
         self.path = path
         self.headers = headers
         self.body = body
 
     @classmethod
-    def from_bytes(cls, data):
+    def from_bytes(cls, data: bytes):
         """Parse a byte string into a Request object.
 
         Args:
@@ -42,10 +39,9 @@ class Request:
         Returns:
             Request: A request object with the parsed data as parameters.
         """
-        # split the request into lines
-        lines = data.decode().split('\r\n')
-
-        # parse the request line
+        # decode the data from bytes to string, split the data into lines
+        lines = data.decode().lines.split('\r\n')
+        # parse the request line, parse the method and path
         request_line = lines[0].split(' ')
         method = request_line[0]
         path = request_line[1]
@@ -64,7 +60,7 @@ class Request:
         return cls(method, path, headers, body)
 
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Dict:
         """
         Creates dictionary representation of the Response Class.
 

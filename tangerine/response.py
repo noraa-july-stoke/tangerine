@@ -94,7 +94,7 @@ class Response:
             status_code (int, optional): The HTTP status code for the response. Defaults to 404.
             headers (Dict[str, str], optional): The headers for the response. Defaults to an empty dictionary.
             body (str, optional): The body of the response. Defaults to an empty string.
-        """        
+        """
         self.status_code = status_code
         self.headers = headers or {}
         self.body = body

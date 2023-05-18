@@ -9,26 +9,20 @@
 import socket
 import select
 import json
-from typing import List, Tuple, Callable, TypeVar, Type, Union, Dict
+from typing import List, Tuple, Callable, TypeVar, Union, Dict
 import os
 import mimetypes
 import re
 import logging
-from colorama import init, Fore, Back, Style, Cursor
+from colorama import Fore, Style
 
-from errors import TangerineError
-from request import Request
-from response import Response
-from ctx import Ctx
-from route import Route
-from router import Router
-from print_messages import print_success
+from .request import Request
+from .response import Response
+from .router import Router
+from .print_messages import print_success
 from debug_helpers import generate_diff
-from yuzu import Yuzu
-from key_lime import KeyLime
-from middleware import Middleware, MiddlewareResponse
-# from tangerine import Request, Response, Ctx, PrintMessage, Route, Router, TangerineError
-
+from .middleware import Middleware, MiddlewareResponse
+from .ctx import Ctx
 T = TypeVar("T")
 logging.basicConfig(level=logging.DEBUG)
 
@@ -45,7 +39,6 @@ class Tangerine:
         self.static_route_pattern_re = None
         self.debug_level: int = debug_level
         self.routers: Dict[str, Router] = {}
-        # self.set_terminal_background_color()
         # self.config: Dict = None
         # self.ctx = Ctx(self)
 
@@ -97,7 +90,7 @@ class Tangerine:
         self.routes[method][path] = handler
 
 
-    def use_router(self: T, router: Router) -> None:
+    def use_router(self, router: Router) -> None:
         router.set_debug_level(self.debug_level)
         self.routers[router.prefix] = router
 

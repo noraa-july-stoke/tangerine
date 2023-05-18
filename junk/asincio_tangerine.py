@@ -22,14 +22,14 @@ logging.basicConfig(level=logging.DEBUG)
 
 class Tangerine:
     """
-    The Tangerine class is a lightweight server configuration tool. It allows the setup and maintenance of a server 
-    on a given host and port. It has capabilities for handling HTTP requests and responses, route management, 
+    The Tangerine class is a lightweight server configuration tool. It allows the setup and maintenance of a server
+    on a given host and port. It has capabilities for handling HTTP requests and responses, route management,
     middleware processing, and socket creation.
 
     Attributes:
         host (str): The IP address or hostname where the server will be hosted.
         port (int): The port number where the server will be listening.
-        routes (dict): A dictionary to manage routes. The keys are route URLs and the values are dictionaries with 
+        routes (dict): A dictionary to manage routes. The keys are route URLs and the values are dictionaries with
         HTTP methods (as keys) and their associated handler functions (as values).
         middlewares (list): A list of middleware functions to be executed before the route handlers.
         static_route_pattern: Placeholder for static route patterns.
@@ -197,7 +197,7 @@ class Tangerine:
         """
         Starts the server and begins listening for connections asynchronously.
 
-        This method sets up the server to listen for connections, logs the server startup information, and then 
+        This method sets up the server to listen for connections, logs the server startup information, and then
         enters a loop where it continuously serves incoming connections until an interrupt is received.
         """
         server = await asyncio.start_server(self.handle_client, self.host, self.port)
@@ -210,7 +210,7 @@ class Tangerine:
 
     def start(self: T) -> None:
         """
-        Starts the event loop. 
+        Starts the event loop.
 
         This method is the entry point for starting the server. It runs the event loop until the server is stopped.
         """

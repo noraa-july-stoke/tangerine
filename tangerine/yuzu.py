@@ -7,13 +7,13 @@
 # or not. And also provides the logic for logging in and out.
 import bcrypt
 import datetime
-from key_lime import KeyLime
+# from tangerine.key_lime import KeyLime
 import jwt
 from typing import Dict, Tuple
 import json
 
 class Yuzu:
-    def __init__(self, keychain: KeyLime, get_user_by_email, create_user):
+    def __init__(self, keychain, get_user_by_email, create_user):
         self.keychain = keychain
         self.get_user_by_email = get_user_by_email
         self.create_user = create_user

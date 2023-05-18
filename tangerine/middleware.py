@@ -1,4 +1,5 @@
 import json
+
 class Node:
     def __init__(self, fn, next_node=None):
         self.fn = fn

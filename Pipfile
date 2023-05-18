@@ -4,12 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-werkzeug = "*"
 click = "*"
-pytest-trio = "*"
-web3 = "*"
-requests = "*"
-psycopg2 = "*"
+
 
 [dev-packages]
 

@@ -1,14 +1,12 @@
 from tangerine import Tangerine, Ctx, Router
 from pymongo import MongoClient
-from key_lime import KeyLime
-from yuzu import Yuzu
+from tangerine.key_lime import KeyLime
+from tangerine.yuzu import Yuzu
 import json
 import jwt
 
 app = Tangerine()
-
 client = MongoClient('mongodb://localhost:27017/')
-
 keychain = KeyLime({
         "SECRET_KEY": "ILOVECATS",
 })
@@ -22,7 +20,6 @@ def get_user_by_email(email):
     if user:
         user['_id'] = str(user['_id'])  # Convert ObjectId to string
     return user
-
 
 def create_user(user_data):
     db = client['mydatabase']
@@ -84,10 +81,13 @@ def get_protected_content(ctx: Ctx) -> None:
 # ==================== API ROUTES ====================
 # if you need to bind more variables to your handler, you can pass in a closure
 api_router = Router(prefix='/api')
+
 api_router.post('/logout', logout)
 api_router.post('/login', login)
 api_router.post('/signup', signup)
 api_router.get('/hello', api_hello_world)
+
+
 # api_router.get('/users', get_and_delete_users)
 api_router.get('/protected', get_protected_content)
 

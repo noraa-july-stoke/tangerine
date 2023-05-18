@@ -1,9 +1,10 @@
 from tangerine import Tangerine, Ctx, Router
-from key_lime import KeyLime
-from yuzu import Yuzu
+from tangerine.key_lime import KeyLime
+from tangerine.yuzu import Yuzu
 import json
 import jwt
 import psycopg2
+
 
 app = Tangerine()
 keychain = KeyLime({
@@ -32,6 +33,7 @@ def create_user(user_data):
     cur.close()
     conn.close()
     return {'_id': user_id, 'email': user_data['email'], 'password': user_data['password']}
+
 
 auth = Yuzu(keychain, get_user_by_email, create_user)
 # serve static files to any request not starting with /api
