@@ -5,11 +5,12 @@ from tangerine.yuzu import Yuzu
 import json
 import jwt
 
-app = Tangerine()
+app = Tangerine(debug_level=2)
 client = MongoClient('mongodb://localhost:27017/')
 keychain = KeyLime({
         "SECRET_KEY": "ILOVECATS",
 })
+
 # Initialize Yuzu with the db funcs.
 def get_user_by_email(email):
     db = client['mydatabase']
@@ -19,7 +20,6 @@ def get_user_by_email(email):
     if user:
         user['_id'] = str(user['_id'])  # Convert ObjectId to string
     return user
-
 
 def create_user(user_data):
     db = client['mydatabase']
