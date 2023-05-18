@@ -1,6 +1,4 @@
 """
-
-
 File: ctx.py
 Description: This file contains the Ctx class which is used to store
 the request, response, keychain objects, and some useful methods.
@@ -9,11 +7,11 @@ from typing import Callable, TypeVar, Optional, Union, Dict, Any
 
 from typing import Callable, TypeVar, Optional, Union, Dict, Any
 from socket import socket
-from request import Request
-from response import Response
-from key_lime import KeyLime
-from yuzu import Yuzu
+from .request import Request
+from .response import Response
+from .key_lime import KeyLime
 import json
+
 T = TypeVar("T")
 
 
