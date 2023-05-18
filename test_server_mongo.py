@@ -5,7 +5,7 @@ from tangerine.yuzu import Yuzu
 import json
 import jwt
 
-app = Tangerine(debug_level=2)
+app = Tangerine()
 client = MongoClient('mongodb://localhost:27017/')
 keychain = KeyLime({
         "SECRET_KEY": "ILOVECATS",
