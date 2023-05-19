@@ -30,6 +30,12 @@
       </form>
       <form id="signupForm">
         <h2>Signup</h2>
+        <label for="signupFirstName">First Name:</label>
+        <input type="text" id="signupFirstName" required />
+        <br />
+        <label for="signupLastName">Last Name:</label>
+        <input type="text" id="signupLastName" required />
+        <br />
         <label for="signupEmail">Email:</label>
         <input type="email" id="signupEmail" required />
         <br />
@@ -99,6 +105,8 @@
 
         signupForm.addEventListener("submit", async (e) => {
           e.preventDefault();
+          const firstName = document.getElementById("signupFirstName").value;
+          const lastName = document.getElementById("signupLastName").value;
           const email = document.getElementById("signupEmail").value;
           const password = document.getElementById("signupPassword").value;
           const response = await fetch("/api/signup", {
@@ -106,7 +114,7 @@
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ firstName, lastName, email, password }),
           });
 
           if (response.status < 299) {
