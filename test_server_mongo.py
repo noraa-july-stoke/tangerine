@@ -1,17 +1,19 @@
 from tangerine import Tangerine, Ctx, Router
 from pymongo import MongoClient
-from tangerine.key_lime import KeyLime
-from tangerine.yuzu import Yuzu
+# from tangerine.key_lime import KeyLime
+# from tangerine.yuzu import Yuzu
+from tangerine_auth import Yuzu, KeyLime
 import json
 import jwt
+import hashlib
 
-app = Tangerine()
+app = Tangerine(debug_level=1)
 client = MongoClient('mongodb://localhost:27017/')
 keychain = KeyLime({
         "SECRET_KEY": "ILOVECATS",
 })
 
-# Initialize Yuzu with the db funcs.
+
 def get_user_by_email(email):
     db = client['mydatabase']
     users = db['users']
@@ -36,7 +38,6 @@ app.static('^/(?!api).*$', './public')
 
 # This is how you define a custom middleware.
 def hello_middle(ctx: Ctx, next) -> None:
-    print("Hello from middleware!")
     ctx.hello_message = json.dumps({"message": "Hello from middleware!"})
     next()
 # ==================== AUTH HANDLERS ====================
@@ -58,20 +59,25 @@ def login(ctx: Ctx) -> None:
     email = user_data['email']
     password = user_data['password']
     user_id, token = auth.login(email, password)
+    print(ctx.user, "HELLO FROM LOGIN")
 
     if token:
         ctx.body = json.dumps({"message": "Logged in successfully", "token": token})
-        ctx.set_res_header("Set-Cookie", f"auth_token={token}; HttpOnly; Path=/")
+        ctx.set_cookie("auth_token", token, HttpOnly=True, samesite=True, Path="/")
         ctx.send(200, content_type='application/json')
-        # Set the token as a cookie or in the response headers
+        # Set the token as a cookie
     else:
         ctx.body = json.dumps({"message": "Invalid credentials"})
         ctx.send(401, content_type='application/json')
 
+
 def logout(ctx: Ctx) -> None:
-    auth.logout()
+    auth.logout(ctx)
     ctx.body = json.dumps({"message": "Logged out successfully"})
+    # Clear the authentication token cookie by setting its value to an empty string and Max-Age to 0
+    ctx.set_cookie("auth_token", "", expires="Thu, 01 Jan 1970 00:00:00 GMT", Path="/")
     ctx.send(200, content_type='application/json')
+
 
 @Router.auth_required
 def get_protected_content(ctx: Ctx) -> None:

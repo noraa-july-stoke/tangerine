@@ -115,7 +115,6 @@ class Tangerine:
         # Use regular expressions to match the requested path against the static route pattern
         pattern = '^{}(/.*)?$'.format(self.static_route_pattern.rstrip('/'))
         self.static_route_pattern_re = re.compile(pattern)
-        print("STATIC ROUTE PATTERN", self.static_route_pattern, self.static_route_pattern_re, self.static_dir_path)
 
     def parse_request(self, request: bytes) -> Tuple[str, str, Dict[str, str], Union[str, bytes]]:
         """

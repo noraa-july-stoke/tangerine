@@ -42,7 +42,6 @@ class Middleware:
         return dispatch(self.head)
 
     def handle_error(self, context, exception):
-        print("HANDLING ERROR FROM THE MIDDLEWARE CLASS!!!!!")
         if isinstance(exception, MiddlewareResponse):
             print(f"Sending response: {exception.status_code} {exception.message}")
         elif isinstance(exception, UnauthorizedError):  # Handle the custom exception

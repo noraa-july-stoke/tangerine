@@ -9,7 +9,6 @@ from typing import List, Tuple, Callable, Dict
 from colorama import Fore, Style
 
 from .ctx import Ctx
-# from tangerine import Route, Request, Response, Ctx
 from debug_helpers import generate_diff
 
 class Router:
@@ -86,7 +85,8 @@ class Router:
     @staticmethod
     def auth_required(handler):
         def auth_wrapper(ctx, next=None):
-            if ctx.auth and ctx.auth.get('user'):
+            print(ctx.auth, ctx.user)
+            if ctx.auth and ctx.user:
                 handler(ctx)
             else:
                 ctx.body = json.dumps({"message": "Unauthorized"})
