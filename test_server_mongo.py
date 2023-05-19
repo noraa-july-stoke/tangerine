@@ -1,11 +1,8 @@
 from tangerine import Tangerine, Ctx, Router
 from pymongo import MongoClient
-# from tangerine.key_lime import KeyLime
-# from tangerine.yuzu import Yuzu
 from tangerine_auth import Yuzu, KeyLime
 import json
-import jwt
-import hashlib
+
 
 app = Tangerine(debug_level=1)
 client = MongoClient('mongodb://localhost:27017/')
