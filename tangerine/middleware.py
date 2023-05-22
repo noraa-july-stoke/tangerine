@@ -1,9 +1,11 @@
 import json
+from flask_cors import CORS
 
 class Node:
     def __init__(self, fn, next_node=None):
         self.fn = fn
         self.next = next_node
+        self.cors_middleware = None
 
 class MiddlewareResponse(Exception):
     def __init__(self, status_code, message):
@@ -29,6 +31,11 @@ class Middleware:
             self.tail.next = new_node
             self.tail = new_node
 
+        if fn == self.cors_middleware:
+            self.cors_middleware = Node(fn)
+        else:
+            new_node = Node(fn)
+
     def execute(self, context):
         def dispatch(node):
             if node:
@@ -39,7 +46,14 @@ class Middleware:
                     self.handle_error(context, response)
             else:
                 return None
+
+        if self.cors_middleware:
+            try:
+                return self.cors_middleware.fn(context, lambda: dispatch(self.head))
+            except MiddlewareResponse as response:
+                self.handle_error(context, response)
         return dispatch(self.head)
+       
 
     def handle_error(self, context, exception):
         if isinstance(exception, MiddlewareResponse):
@@ -50,3 +64,13 @@ class Middleware:
         else:
             print("An unhandled exception occurred:")
             print(exception)
+
+
+app = Flask(__name__)
+CORS(app)  # Apply CORS globally
+
+middleware = Middleware()
+middleware.use(CORS)  # Add CORS middleware to the custom Middleware class
+
+if __name__ == '__main__':
+    app.run()

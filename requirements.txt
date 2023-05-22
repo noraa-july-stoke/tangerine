@@ -1,2 +1,3 @@
 pyjwt
 bcrypt
+Flask-Cors==2.0.1
