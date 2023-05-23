@@ -99,5 +99,3 @@ app.use(auth.jwt_middleware)
 app.use_router(api_router)
 app.start()
 
-
-app.use(cors_middleware)
