@@ -5,7 +5,6 @@ tangerine/__version__.py
 tangerine/ctx.py
 tangerine/entry_points.py
 tangerine/errors.py
-tangerine/key_lime.py
 tangerine/middleware.py
 tangerine/print_messages.py
 tangerine/protocols.py
@@ -14,7 +13,6 @@ tangerine/response.py
 tangerine/route.py
 tangerine/router.py
 tangerine/tangerine.py
-tangerine/yuzu.py
 tangerine.egg-info/PKG-INFO
 tangerine.egg-info/SOURCES.txt
 tangerine.egg-info/dependency_links.txt
