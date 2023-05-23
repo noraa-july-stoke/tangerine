@@ -9,7 +9,6 @@ from typing import Callable, TypeVar, Optional, Union, Dict, Any
 from socket import socket
 from .request import Request
 from .response import Response
-from .key_lime import KeyLime
 import json
 from http.cookies import SimpleCookie
 
@@ -53,7 +52,7 @@ class Ctx:
 
     """
 
-    def __init__(self: T, request: Request, response: Response, keychain: Optional[KeyLime] = None, auth: bool = False) -> None:
+    def __init__(self: T, request: Request, response: Response, keychain: Optional[T] = None, auth: bool = False) -> None:
 
         """
         Initialize a new Ctx object.
