@@ -41,6 +41,7 @@ class Tangerine:
         self.routers: Dict[str, Router] = {}
         # self.config: Dict = None
         # self.ctx = Ctx(self)
+        self.response = Response()  # Initialize the Response object
 
     # def
 
@@ -75,7 +76,7 @@ class Tangerine:
         return wrapper
 
     def use(self, middleware: Callable[[Request, Response], None]) -> None:
-        self.middlewares.use(middleware)  # Update the use method to call middlewares.use
+        self.middlewares.use(middleware)
 
     def _create_socket(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -149,6 +150,9 @@ class Tangerine:
             res = Response()
 
             # Apply the middleware to the Request and Response objects
+            self.request = req  # Store the Request object in the Tangerine instance
+            self.response = res  # Store the Response object in the Tangerine instance
+
 
             ctx = Ctx(req, res)
             ctx.set_socket(sock)  # Set the socket for the context
