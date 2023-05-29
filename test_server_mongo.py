@@ -1,18 +1,15 @@
 from tangerine import Tangerine, Ctx, Router
 from pymongo import MongoClient
-# from tangerine.key_lime import KeyLime
-# from tangerine.yuzu import Yuzu
 from tangerine_auth import Yuzu, KeyLime
 import json
-import jwt
-import hashlib
+from tangerine.middleware_extension import cors_middleware
 
 app = Tangerine(debug_level=1)
 client = MongoClient('mongodb://localhost:27017/')
 keychain = KeyLime({
         "SECRET_KEY": "ILOVECATS",
 })
-
+app.use(cors_middleware)
 
 def get_user_by_email(email):
     db = client['mydatabase']
@@ -40,6 +37,7 @@ app.static('^/(?!api).*$', './public')
 def hello_middle(ctx: Ctx, next) -> None:
     ctx.hello_message = json.dumps({"message": "Hello from middleware!"})
     next()
+
 # ==================== AUTH HANDLERS ====================
 def api_hello_world(ctx: Ctx) -> None:
     ctx.body = ctx.hello_message

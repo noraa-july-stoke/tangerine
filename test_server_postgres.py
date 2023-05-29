@@ -1,15 +1,15 @@
 from tangerine import Tangerine, Ctx, Router
-from tangerine.key_lime import KeyLime
-from tangerine.yuzu import Yuzu
+from tangerine_auth import Yuzu, KeyLime
 import json
 import jwt
 import psycopg2
-
+from middleware_extension import cors_middleware
 
 app = Tangerine()
 keychain = KeyLime({
         "SECRET_KEY": "ILOVECATS",
 })
+app.use(cors_middleware)
 
 def get_user_by_email(email):
     conn = psycopg2.connect("postgresql://postgres:C4melz!!@localhost:5432/local_development")
@@ -82,3 +82,6 @@ api_router.get('/protected', get_protected_content)
 app.use(auth.jwt_middleware)
 app.use_router(api_router)
 app.start()
+
+
+app.use(cors_middleware)
