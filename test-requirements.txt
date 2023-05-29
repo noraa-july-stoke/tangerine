@@ -1,1 +1,3 @@
 pymongo
+flask_cors
+psycopg2
