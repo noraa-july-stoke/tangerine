@@ -3,3 +3,5 @@ venv
 random_debugs
 .env
 tangerine.prof
+__pycache__
+__pycache__

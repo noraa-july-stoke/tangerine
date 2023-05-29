@@ -10,7 +10,6 @@ keychain = KeyLime({
         "SECRET_KEY": "ILOVECATS",
 })
 
-
 def get_user_by_email(email):
     db = client['mydatabase']
     users = db['users']
@@ -37,6 +36,7 @@ app.static('^/(?!api).*$', './public')
 def hello_middle(ctx: Ctx, next) -> None:
     ctx.hello_message = json.dumps({"message": "Hello from middleware!"})
     next()
+
 # ==================== AUTH HANDLERS ====================
 def api_hello_world(ctx: Ctx) -> None:
     ctx.body = ctx.hello_message

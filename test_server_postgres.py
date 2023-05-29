@@ -1,6 +1,5 @@
 from tangerine import Tangerine, Ctx, Router
-from tangerine.key_lime import KeyLime
-from tangerine.yuzu import Yuzu
+from tangerine_auth import KeyLime, Yuzu
 import json
 import jwt
 import psycopg2
