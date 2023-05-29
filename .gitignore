@@ -4,4 +4,5 @@ random_debugs
 .env
 tangerine.prof
 __pycache__
+.pytest_cache
 pycache
