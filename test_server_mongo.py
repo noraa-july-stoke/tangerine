@@ -37,6 +37,7 @@ app.static('^/(?!api).*$', './public')
 def hello_middle(ctx: Ctx, next) -> None:
     ctx.hello_message = json.dumps({"message": "Hello from middleware!"})
     next()
+
 # ==================== AUTH HANDLERS ====================
 def api_hello_world(ctx: Ctx) -> None:
     ctx.body = ctx.hello_message
@@ -98,4 +99,3 @@ app.use(hello_middle)
 app.use(auth.jwt_middleware)
 app.use_router(api_router)
 app.start()
-
