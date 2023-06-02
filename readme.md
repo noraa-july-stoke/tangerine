@@ -16,10 +16,7 @@ it will be a lot more intuitive and easier to use than Flask. I am currently wor
 architecture and basic functionality. I am hoping to have a working full version of the framework
 up and running some time soon.
 
-I am also working on a CLI tool for database migrations.
-I aim to make the new framework with better route creation syntax than Flask and
-am hoping to tackle some problems such as running database migrations in a better fashion (because
-ewwww migrations in Python frameworks.... JavaScript frameworks currently handle this so much better).
+I am also working on a CLI tool for this.
 
 This is brand new, so still making skeletons/experimenting with the basic architecture and modules that I want to use.
 I am working out some kinks in the Tangerine class before I fixup Request, Response,and Ctx and then start to add in
