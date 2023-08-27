@@ -1,2 +1,6 @@
 pyjwt
 bcrypt
+colorama
+pymongo
+tangerine_auth
+flask_cors
