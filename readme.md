@@ -11,16 +11,20 @@
 
 TANGERINE DISCORD: https://discord.gg/ABZmtHch
 
-Thanks for checking out Tangerine! This is a new Python framework that I am working on. I hope
-it will be a lot more intuitive and easier to use than Flask. I am currently working on the
-architecture and basic functionality. I am hoping to have a working full version of the framework
-up and running some time soon.
+Thanks for checking out Tangerine! This is a new Python framework that I am working on. It is almost to the beta version.
+I started writing it because flask didn't support async view functions at the time. They do now as of 2.0 , but still not out of the box. Some of the goals of this framework:
+
+1. To be the easiest python web framework to understand for developers coming from javascript.
+
+2. For the base API to be extremely lightweight and unopinionated, yet also have optional extensions that will work out of the box as you need them. Basically you can boot up an extremely lightweight api to serve static sites within a few minutes, but also there is the option to download plugins that offer a fully-featured CLI, and other tools that would make it work more like ruby on rails or Django. Right now there is an extremely easy to use auth module that allows you to either use a default hashing algorithm or swap out to use your own with just a few lines of code.
+
+3. Support async/await out of the box.
+
+This project does not hit all of these goals in it's current state, but I am working on it. I am posting this here in case there might be any people who are interested in contributing so we can confidently publish a working beta version to PyPi soon. Have a lovely day :)
 
 I am also working on a CLI tool for this.
-
-This is brand new, so still making skeletons/experimenting with the basic architecture and modules that I want to use.
-I am working out some kinks in the Tangerine class before I fixup Request, Response,and Ctx and then start to add in
-more functionality. Current setup work is under branch architecture-setup. There are other repos associated with this:
+ Still making skeletons/experimenting with the basic architecture and modules that I want to use.
+Current setup work is under branch architecture-setup. There are other repos associated with this:
 Bergamot, Buddha's Hand, and Key Limes.
 
 
