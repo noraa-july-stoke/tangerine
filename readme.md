@@ -9,7 +9,7 @@
 🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊
 ```
 
-TANGERINE DISCORD: https://discord.gg/2VsGKfBr
+TANGERINE DISCORD: https://discord.gg/ABZmtHch
 
 Thanks for checking out Tangerine! This is a new Python framework that I am working on. I hope
 it will be a lot more intuitive and easier to use than Flask. I am currently working on the
