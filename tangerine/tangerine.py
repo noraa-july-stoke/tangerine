@@ -41,7 +41,7 @@ class Tangerine:
         self.routers: Dict[str, Router] = {}
         # self.config: Dict = None
         # self.ctx = Ctx(self)
-        self.response = Response()  # Initialize the Response object
+        self.response = Response()
 
     # def
 
