@@ -23,32 +23,37 @@ I am working out some kinks in the Tangerine class before I fixup Request, Respo
 more functionality. Current setup work is under branch architecture-setup. There are other repos associated with this:
 Bergamot, Buddha's Hand, and Key Limes.
 
+
+Here are the links to those:
+https://github.com/noraa-july-stoke/key-limes
+https://github.com/noraa-july-stoke/buddhas-hand
+
+
 # Commit message keys:
 
 ```
-
-# anything provided after <relevant comment>: is optional but highly encouraged for tracing.
+I use emojis for commit messages. Here's what they mean:
 
 # for updating any readmes or roadmaps
-📖 - <filepath/filename>: <relevant comment>:
+📖 : <relevant comment>:
 
 # for new features
-🚀  - <filepath/filename>: <relevant comment>:
+🚀  : <relevant comment>:
 
 # for debug commits.
-🪳👟 - <filepath/filename>: <relevant comment>:
+🪳👟 : <relevant comment>:
 
 # for refactoring
-🧠 - <filepath/filename>: <relevant comment>:
+🧠 : <relevant comment>:
 
 # for documentation
-🪷 - <filepath/filename>: <relevant comment>:
+🪷 : <relevant comment>
 
 # branch initialization commit
-🌱 - <filepath/filename>: <relevant comment>
+🌱 : <relevant comment>
 
 # standard merge message
-🔀 - <branch name>: <feature filepath>: <relevant comment>
+🔀 : <relevant comment>
 
 ```
 
